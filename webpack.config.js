@@ -21,9 +21,12 @@ module.exports={
   resolve :{
     root:__dirname,
     alias:{
-      Main:'app/components/main.jsx',
-      applicationStyles:'app/styles/app.scss'
-
+      Main:'app/components/Main.jsx',
+      applicationStyles:'app/styles/app.scss',
+      ImportMainPage:'app/components/ImportMainPage.jsx',
+      CountryPage: 'app/components/CounrtyPage.jsx',
+      YearPage: 'app/components/YearPage.jsx',
+      VariablePage: 'app/components/VariablePage.jsx'
     },
     extensions:['','.js','jsx']
   },

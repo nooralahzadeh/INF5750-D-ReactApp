@@ -1,18 +1,148 @@
+/* Step Components */
+.steps-component {
+  font-family: sans-serif;
+  width: 700px;
+  margin: 0 auto;
+  position: relative;
 
-$space-large: 2.5rem;
-$title-color: #555;
+  .steps-navigator {
+    float: left;
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    width: 100%;
+    border: 1px solid #ccc;
 
-.page-title{
-  color: $title-color;
-  margin-top: $space-large;
-  margin-bottom: $space-large;
+    li {
+      float: left;
+      width: 33.3%;
+      text-align: center;
+      padding: 13px;
+      box-sizing: border-box;
+      cursor: pointer;
+      background: whitesmoke;
+
+      &:nth-child(2n) {
+        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+      }
+
+      .number {
+        background: white;
+        width: 24px;
+        border-radius: 15px;
+        display: inline-block;
+        height: 24px;
+        text-align: center;
+        line-height: 26px;
+        color: #000;
+      }
+
+      &.active-step {
+        background: #50BB50;
+        color: #fff;
+      }
+    }
+  }
+
+  .steps-content {
+    float: left;
+    clear: both;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    margin: 25px 0;
+    box-shadow: 0px 0px 8px #ccc;
+
+    .form-title {
+      color: #424242;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .form-data {
+      width: 100%;
+      float: left;
+      clear: both;
+
+      label {
+        float: left;
+        clear: both;
+        font-size: 14px;
+        margin: 21px 0 5px;
+        color: #525151;
+      }
+
+      input {
+        width: 100%;
+        float: left;
+        clear: both;
+        padding: 7px;
+        font-size: 18px;
+        box-sizing: border-box;
+        outline: none;
+      }
+
+      .error {
+        float: left;
+        color: red;
+        font-size: 13px;
+        margin: 5px 0 0 0;
+      }
+    }
+
+    .finish-button {
+      width: 100px;
+      background: red;
+      float: right;
+      padding: 8px;
+      text-align: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+      margin: 20px 0 0;
+      cursor: pointer;
+    }
+  }
+
+  .steps-nav {
+    float: left;
+    clear: both;
+
+    button {
+      background: #50BB50;
+      border: 0px;
+      font-size: 21px;
+      width: 50px;
+      color: #fff;
+      cursor: pointer;
+      height: 50px;
+      position: absolute;
+      outline: none;
+
+      &:disabled {
+        background: #ccc;
+      }
+    }
+
+    .steps-nav-prev{
+      left: -50px;
+      top: 100px;
+    }
+
+    .steps-nav-next{
+      right: -50px;
+      top: 100px;
+    }
+  }
 }
 
+/* Intro */
+.intro {
+  font-family: sans-serif;
+  text-align: center;
 
-input[type=search]{
-  box-shadow: none;
-}
-
-p {
-  color:#777;
+  .title {
+    font-size: 30px;
+  }
 }
