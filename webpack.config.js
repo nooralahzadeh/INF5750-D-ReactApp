@@ -22,11 +22,11 @@ module.exports={
     root:__dirname,
     alias:{
       Main:'app/components/Main.jsx',
-      applicationStyles:'app/styles/app.scss',
-      ImportMainPage:'app/components/ImportMainPage.jsx',
-      CountryPage: 'app/components/CounrtyPage.jsx',
-      YearPage: 'app/components/YearPage.jsx',
-      VariablePage: 'app/components/VariablePage.jsx'
+      CountryForm: 'app/components/CountryForm.jsx',
+      YearForm: 'app/components/YearForm.jsx',
+      VariableForm: 'app/components/VariableForm.jsx',
+      applicationStyles:'app/styles/app.scss'
+
     },
     extensions:['','.js','jsx']
   },
