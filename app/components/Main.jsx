@@ -33,7 +33,6 @@ var Main= React.createClass({
         <Step customNavigator="Variables">
           <span className="form-title">Select variables</span>
           <VariableForm/>
-          <div className="finish-button">Import</div>
         </Step>
       </Steps>
     );

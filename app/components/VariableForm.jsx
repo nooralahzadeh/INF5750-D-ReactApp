@@ -7,8 +7,13 @@ var VariableForm=React.createClass({
 
       return(
         <div>
-          <h2>Variabels come here!</h2> 
+        <div>
+          <h3>Varibles come here!</h3>
         </div>
+
+
+        <button className="button expanded hollow">Import</button>
+    </div>
       );
     }
   });
