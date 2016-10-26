@@ -2,23 +2,6 @@ var React=require('react');
 var FilteredMultiSelect = require('react-filtered-multiselect');
 var ReactDom = require('react-dom');
 
-
-var COUNTRIES_LIST =[
-  {"id": 1, "name": "NORWAY"},
-  {"id": 2, "name": "FRANCE"},
-  {"id": 3, "name": "ITALY"},
-  {"id": 4, "name": "IRAN"},
-  {"id": 5, "name": "ENGLAND"},
-  {"id": 6, "name": "SWEEDEN"},
-  {"id": 7, "name": "USA"},
-  {"id": 8, "name": "ROMANIA"},
-  {"id": 9, "name": "POLAND"},
-  {"id": 10, "name": "RUSSIA"}
-]
-
-
-
-
 var CountryForm=React.createClass({
     getInitialState() {
 
