@@ -21,23 +21,35 @@ var COUNTRIES_LIST =[
 
 var CountryForm=React.createClass({
     getInitialState() {
+
       return {
+              selectedOptions: [],
               data:[]
             }
       },
 
-      renderContryList: function(data) {
-        var contryLIst = data.map(function(country) {
-          return (
-              <option value={country.DHS_CountryCode}> {country.CountryName}</option>
-          );
-        });
-        return (
-        <select multiple>
-            {contryLIst}
-        </select>
-        );
+      handleDeselect(index) {
+        var selectedOptions = this.state.selectedOptions.slice()
+        selectedOptions.splice(index, 1)
+        this.setState({selectedOptions})
       },
+
+      handleSelectionChange(selectedOptions) {
+        this.setState({selectedOptions})
+      },
+
+      // renderContryList: function(data) {
+      //   var contryLIst = data.map(function(country) {
+      //     return (
+      //         <option value={country.DHS_CountryCode}> {country.CountryName}</option>
+      //     );
+      //   });
+      //   return (
+      //   <select multiple>
+      //       {contryLIst}
+      //   </select>
+      //   );
+      // },
 
 
   loadCountries: function() {
@@ -54,19 +66,41 @@ var CountryForm=React.createClass({
 
 
   componentDidMount: function() {
-      // Is there a React-y way to avoid rebinding `this`? fat arrow?
       this.loadCountries();
     },
 
 
   render:function(){
+      var list = [];
+      this.state.data.map(function(country) {
+        var newObject={"id":country.DHS_CountryCode,"name":country.CountryName};
+        list.push(newObject);
+        }
+      );
 
+    var {selectedOptions} = this.state
       return(
+      <div>
+      <FilteredMultiSelect
+        onChange={this.handleSelectionChange}
+        options={list}
+        selectedOptions={selectedOptions}
+        textProp="name"
+        valueProp="id"
+      />
+      {selectedOptions.length === 0 && <p>(nothing selected yet)</p>}
+      {selectedOptions.length > 0 && <ul>
+        {selectedOptions.map((counrty, i) => <li key={counrty.id}>
+          {`${counrty.name} `}
+          <button type="button" onClick={this.handleDeselect.bind(null, i)}>
+            &times;
+          </button>
+        </li>)}
+      </ul>}
+      </div>
+      );
+      }
+      });
 
-          this.renderContryList(this.state.data)
-
-    );
-  }
-  });
 
 module.exports=CountryForm;
