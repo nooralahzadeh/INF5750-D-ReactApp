@@ -38,10 +38,12 @@ var Main= React.createClass({
     );
   },
   stepShouldChange:function() {
-    this.setState({
-      formFail: false
-      });
-      return true;
+    //added to test
+        this.setState({
+          formFail: false
+          });
+          return true;
+
       if (this.refs.name.value === 'joe') {
         this.setState({
           formFail: false

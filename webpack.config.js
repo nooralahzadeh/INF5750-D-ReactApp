@@ -25,6 +25,8 @@ module.exports={
       CountryForm: 'app/components/CountryForm.jsx',
       YearForm: 'app/components/YearForm.jsx',
       VariableForm: 'app/components/VariableForm.jsx',
+      dhisImporter:'app/components/dhisImporter.jsx',
+      Nav:'app/components/Nav.jsx',
       applicationStyles:'app/styles/app.scss'
 
     },

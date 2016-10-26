@@ -74,7 +74,7 @@ var CountryForm=React.createClass({
       {selectedOptions.length === 0 && <p>(nothing selected yet)</p>}
       {selectedOptions.length > 0 && <ul>
         {selectedOptions.map((counrty, i) => <li key={counrty.id}>
-          {`${counrty.name} `}
+          {`${counrty.name} ` + `${counrty.id}`}
           <button type="button" onClick={this.handleDeselect.bind(null, i)}>
             &times;
           </button>
