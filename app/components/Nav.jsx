@@ -14,7 +14,7 @@ var Nav =React.createClass({
        title="DHIS importer"
        controls
        isFullscreen={this.state.isFullscreen}
-       onCloseClick={() => console.log('Close window')}
+       onCloseClick={() => this.close()}
        onMinimizeClick={() => console.log('Minimize window')}
        onMaximizeClick={() => console.log('Mazimize window')}
        onResizeClick={() => this.setState({ isFullscreen: !this.state.isFullscreen })}

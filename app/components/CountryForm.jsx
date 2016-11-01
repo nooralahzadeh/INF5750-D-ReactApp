@@ -21,18 +21,6 @@ var CountryForm=React.createClass({
         this.setState({selectedOptions})
       },
 
-      // renderContryList: function(data) {
-      //   var contryLIst = data.map(function(country) {
-      //     return (
-      //         <option value={country.DHS_CountryCode}> {country.CountryName}</option>
-      //     );
-      //   });
-      //   return (
-      //   <select multiple>
-      //       {contryLIst}
-      //   </select>
-      //   );
-      // },
 
 
   loadCountries: function() {
@@ -52,6 +40,10 @@ var CountryForm=React.createClass({
       this.loadCountries();
     },
 
+    //to sent selected countries to another Component
+  retriveSelected:function(){
+       return (this.state.selectedOptions);
+    },
 
   render:function(){
       var list = [];

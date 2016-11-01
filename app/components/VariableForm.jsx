@@ -8,7 +8,7 @@ var VariableForm=React.createClass({
       return(
         <div>
         <div>
-          <h3>Varibles come here!</h3>
+          <h3>Varibles  changes come here!</h3>
         </div>
 
 

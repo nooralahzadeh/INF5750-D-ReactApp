@@ -27,6 +27,17 @@ var YearForm=React.createClass({
 
   render:function(){
       var {selectedOptions} = this.state
+      var countries = this.props.countires.map(function(country) {
+         return (
+           <ul className="menu">
+               <li>
+                 <p>{country.name}</p>
+               </li>
+           </ul>
+           );
+     }, this);
+
+
       return(
         <div>
         <FilteredMultiSelect
@@ -45,6 +56,8 @@ var YearForm=React.createClass({
             </button>
           </li>)}
         </ul>}
+        <p>Selected Countires from previous step</p>
+        {countries}
       </div>
     );
     }

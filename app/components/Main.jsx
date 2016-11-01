@@ -11,7 +11,8 @@ var Main= React.createClass({
 
   getInitialState:function(){
     return {
-      formFail: false
+      formFail: false,
+      selected:[]
     }
   },
 
@@ -24,11 +25,11 @@ var Main= React.createClass({
         stepShouldChange={this.stepShouldChange}>
         <Step customNavigator="Counrty">
           <span className="form-title">Selecr Country(ies)</span>
-          <CountryForm/>
+          <CountryForm  ref={(countires) => { this._countires = countires;}}/>
         </Step>
         <Step customNavigator="Year">
           <span className="form-title">Select Year(s)</span>
-            <YearForm/>
+            <YearForm  countires={this.state.selected}/>
         </Step>
         <Step customNavigator="Variables">
           <span className="form-title">Select variables</span>
@@ -37,16 +38,16 @@ var Main= React.createClass({
       </Steps>
     );
   },
+
+
   stepShouldChange:function() {
     //added to test
-        this.setState({
-          formFail: false
-          });
-          return true;
+    var ls=this._countires.retriveSelected();
 
-      if (this.refs.name.value === 'joe') {
+    if (ls.length>0 ) {
         this.setState({
-          formFail: false
+          formFail: false,
+          selected:ls
         });
         return true;
       } else {
