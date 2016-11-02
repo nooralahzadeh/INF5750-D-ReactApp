@@ -6,13 +6,14 @@ var VariableForm=require('VariableForm');
 var {Steps, Step} = require('react-multistep-component');
 
 
-
+const DHIS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
 var Main= React.createClass({
 
   getInitialState:function(){
     return {
       formFail: false,
-      selected:[]
+      selected:[],
+      data:[]
     }
   },
 
@@ -29,7 +30,7 @@ var Main= React.createClass({
         </Step>
         <Step customNavigator="Year">
           <span className="form-title">Select Year(s)</span>
-            <YearForm  countires={this.state.selected}/>
+            <YearForm  countires={this.state.selected} years={this.state.data}/>
         </Step>
         <Step customNavigator="Variables">
           <span className="form-title">Select variables</span>
@@ -39,18 +40,38 @@ var Main= React.createClass({
     );
   },
 
+  getSurveyYears: function(country_code) {
+      var requestUrl = `${DHIS_SURVEY_API_URL}?countryIds=${country_code}`;
+      $.ajax({
+      url: requestUrl,
+      dataType: 'json',
+      cache:false,
+      success: function(data) {
+         this.setState({data: data.Data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+      console.error("http://api.dhsprogram.com/rest/dhs/v4/surveys?", status, err.toString());
+      }.bind(this)});},
 
   stepShouldChange:function() {
     //added to test
     var ls=this._countires.retriveSelected();
-
+    debugger;
     if (ls.length>0 ) {
-        this.setState({
+      this.getSurveyYears(ls[0].id);
+      if (this.state.data.length>0){
+      this.setState({
           formFail: false,
           selected:ls
         });
         return true;
-      } else {
+      } else{
+        this.setState({
+          formFail: true
+        });
+      }
+
+    } else {
         this.setState({
           formFail: true
         });
