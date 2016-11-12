@@ -55,7 +55,10 @@ var Main= React.createClass({
 
   stepShouldChange:function() {
     //added to test
-    var ls=this._countires.retriveSelected();
+    var ls=[];
+    this.setState({data:[]});
+    ls=this._countires.retriveSelected();
+
     debugger;
     if (ls.length>0 ) {
       this.getSurveyYears(ls[0].id);
