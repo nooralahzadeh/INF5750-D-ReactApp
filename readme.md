@@ -1,5 +1,5 @@
 
-Boilerplate React App!
+React redux App for INF5750 ! Project-D Import, matching, visualizing !
 
 Following steps for run the app:
 
