@@ -4,7 +4,7 @@ var {Provider} = require('react-redux');
 var axios = require('axios');
 var {Route,Router,IndexRoute,browserHistory}=require('react-router');
 var { syncHistoryWithStore, routerReducer } =require('react-router-redux');
-var DHISimporter=require('DHISimporter');
+var DHISimport=require('DHISimport');
 var actions = require('actions');
 var store = require('configureStore').configure();
 import Main from 'Main';
@@ -32,7 +32,7 @@ ReactDOM.render(
   <Provider store={store}>
       { /* Tell the Router to use our enhanced history */ }
       <Router history={history}>
-        <Route path="/" component={DHISimporter}>
+        <Route path="/" component={DHISimport}>
           <Route path="foo" component={Main}/>
         </Route>
       </Router>
