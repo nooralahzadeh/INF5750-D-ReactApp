@@ -27,6 +27,9 @@ module.exports={
       VariableForm: 'app/components/VariableForm.jsx',
       DHISimporter:'app/components/DHISimporter.jsx',
       Nav:'app/components/Nav.jsx',
+      actions: 'app/actions/actions.jsx',
+      reducers: 'app/reducers/reducers.jsx',
+      configureStore: 'app/store/configureStore.jsx',
       applicationStyles:'app/styles/app.scss'
 
     },

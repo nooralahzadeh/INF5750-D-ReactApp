@@ -1,9 +1,22 @@
 var React=require('react');
 var ReactDOM=require('react-dom');
-var {Route,Router,IndexRoute,hashHistory}=require('react-router');
-var Main=require('Main');
+var {Provider} = require('react-redux');
+var axios = require('axios');
+var {Route,Router,IndexRoute,browserHistory}=require('react-router');
+var { syncHistoryWithStore, routerReducer } =require('react-router-redux');
 var DHISimporter=require('DHISimporter');
+var actions = require('actions');
+var store = require('configureStore').configure();
+import Main from 'Main';
 
+
+store.subscribe(() => {
+  var state = store.getState();
+  console.log('New state', state);
+});
+
+const DHS_COUNTRY_API_URL='http://api.dhsprogram.com/rest/dhs/countries';
+store.dispatch(actions.fetchCountires(DHS_COUNTRY_API_URL));
 
 // load foundation'
 require('style!css!foundation-sites/dist/foundation.min.css');
@@ -12,13 +25,17 @@ $(document).foundation();
 //App css
 require('style!css!sass!applicationStyles');
 
+// Create an enhanced history that syncs navigation events with the store
+const history = syncHistoryWithStore(browserHistory, store)
+
 ReactDOM.render(
-  <Router history={hashHistory}>
-    <Route path="/" component={DHISimporter}>
-      <Route component={Main}/>
-
-    </Route>
-  </Router>,
-
-    document.getElementById('app')
+  <Provider store={store}>
+      { /* Tell the Router to use our enhanced history */ }
+      <Router history={history}>
+        <Route path="/" component={DHISimporter}>
+          <Route path="foo" component={Main}/>
+        </Route>
+      </Router>
+    </Provider>,
+  document.getElementById('app')
   );
