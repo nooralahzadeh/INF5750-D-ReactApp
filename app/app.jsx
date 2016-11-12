@@ -2,7 +2,7 @@ var React=require('react');
 var ReactDOM=require('react-dom');
 var {Route,Router,IndexRoute,hashHistory}=require('react-router');
 var Main=require('Main');
-var dhisImporter=require('dhisImporter');
+var DHISimporter=require('DHISimporter');
 
 
 // load foundation'
@@ -14,7 +14,7 @@ require('style!css!sass!applicationStyles');
 
 ReactDOM.render(
   <Router history={hashHistory}>
-    <Route path="/" component={dhisImporter}>
+    <Route path="/" component={DHISimporter}>
       <Route component={Main}/>
 
     </Route>

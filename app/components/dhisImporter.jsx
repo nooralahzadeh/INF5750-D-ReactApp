@@ -2,7 +2,7 @@ var React=require('react');
 var Main=require('Main');
 var Nav=require('Nav');
 
-var dhisImporter= (props)=>{
+var DHISimporter= (props)=>{
   return (
     <div>
       <Nav/>
@@ -13,4 +13,4 @@ var dhisImporter= (props)=>{
 
 }
 
-module.exports=dhisImporter;
+module.exports=DHISimporter;

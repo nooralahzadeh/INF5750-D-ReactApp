@@ -25,7 +25,7 @@ var Main= React.createClass({
         nextButton='&#8594;'
         stepShouldChange={this.stepShouldChange}>
         <Step customNavigator="Counrty">
-          <span className="form-title">Selecr Country(ies)</span>
+          <span className="form-title">Select Country</span>
           <CountryForm  ref={(countires) => { this._countires = countires;}}/>
         </Step>
         <Step customNavigator="Year">

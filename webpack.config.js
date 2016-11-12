@@ -25,7 +25,7 @@ module.exports={
       CountryForm: 'app/components/CountryForm.jsx',
       YearForm: 'app/components/YearForm.jsx',
       VariableForm: 'app/components/VariableForm.jsx',
-      dhisImporter:'app/components/dhisImporter.jsx',
+      DHISimporter:'app/components/DHISimporter.jsx',
       Nav:'app/components/Nav.jsx',
       applicationStyles:'app/styles/app.scss'
 
@@ -41,7 +41,8 @@ module.exports={
         },
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/
-      }
+      },
+
     ]
   },
 devtool: 'inline-source-map'

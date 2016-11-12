@@ -1,29 +1,16 @@
 var React=require('react');
-var FilteredMultiSelect = require('react-filtered-multiselect');
 var ReactDom = require('react-dom');
 
 var CountryForm=React.createClass({
     getInitialState() {
-
       return {
-              selectedOptions: [],
+              selectedValue:'' ,
+              selectedCountryName:'',
               data:[]
             }
       },
 
-      handleDeselect(index) {
-        var selectedOptions = this.state.selectedOptions.slice()
-        selectedOptions.splice(index, 1)
-        this.setState({selectedOptions})
-      },
-
-      handleSelectionChange(selectedOptions) {
-        this.setState({selectedOptions})
-      },
-
-
-
-  loadCountries: function() {
+ loadCountries: function() {
       $.ajax({
       url: "http://api.dhsprogram.com/rest/dhs/countries",
       dataType: 'json',
@@ -42,39 +29,36 @@ var CountryForm=React.createClass({
 
     //to sent selected countries to another Component
   retriveSelected:function(){
-       return (this.state.selectedOptions);
+       return (this.state.selectValue);
     },
 
+  handleChange:function(e){
+           this.setState({
+             selectValue:e.target.value,
+             selectedCountryName:e.target.options[e.target.selectedIndex].text
+           });
+       },
   render:function(){
-      var list = [];
-      this.state.data.map(function(country) {
-        var newObject={"id":country.DHS_CountryCode,"name":country.CountryName};
-        list.push(newObject);
-        }
-      );
 
-    var {selectedOptions} = this.state
+      var options= this.state.data.map((item,key)=>
+          <option key={key} value={item.DHS_CountryCode}>
+            {item.CountryName}
+          </option>
+        );
+        
+      var message='You selected: '+ this.state.selectedCountryName;
       return(
-      <div>
-      <FilteredMultiSelect
-        onChange={this.handleSelectionChange}
-        options={list}
-        selectedOptions={selectedOptions}
-        textProp="name"
-        valueProp="id"
-      />
-      {selectedOptions.length === 0 && <p>(nothing selected yet)</p>}
-      {selectedOptions.length > 0 && <ul>
-        {selectedOptions.map((counrty, i) => <li key={counrty.id}>
-          {`${counrty.name} ` + `${counrty.id}`}
-          <button type="button" onClick={this.handleDeselect.bind(null, i)}>
-            &times;
-          </button>
-        </li>)}
-      </ul>}
-      </div>
-      );
-      }
+
+        <div>
+           <select value={this.state.selectValue}
+            onChange={this.handleChange}
+           >
+           {options}
+            </select>
+            <p>{message}</p>
+            </div>
+        );
+        }
       });
 
 
