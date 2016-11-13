@@ -1,6 +1,7 @@
 var React = require('react');
 var ReactDom = require('react-dom');
 var {connect} = require('react-redux');
+var actions = require('actions');
 var VariableForm=require('VariableForm');
 var {Steps, Step} = require('react-multistep-component');
 
@@ -43,17 +44,26 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-    var {years} = this.props;
-    if (years.years.length>0) {
+
+    var {years,selectedYears,dispatch} = this.props;
+    if (years.years.length>0 && selectedYears.length===0) {
        this.setState({
          formFail: false
        });
        return true;
+
+     } else if(selectedYears.length>0){
+          dispatch(actions.onBackWard());
+          this.setState({
+            formFail: false
+          });
+          return true;
      } else {
        this.setState({
          formFail: true
        });
      }
+
    }
 
 });
@@ -62,4 +72,4 @@ export default connect(
         (state) => {
           return state;
         }
-      )(Main);
+  )(Main);

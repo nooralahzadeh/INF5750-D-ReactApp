@@ -28,8 +28,36 @@ export var yearReducer = (state = {isFetching: false, country:'', years: []}, ac
       return {
         isFetching: false,
         country:action.country,
-        years: action.data
+        years: action.data.map((item)=>{ return {id:item.SurveyYear, name:item.SurveyYear}})
       }  ;
+    default:
+      return state;
+  }
+};
+
+export var selectCounrtyReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'SELECT_COUNRTY':
+      return {
+        code:action.CountryCode,
+        name:action.CounrtyName
+      }
+    default:
+      return state;
+  };
+};
+
+export var yearSelectReducer =  (state=[], action) => {
+  switch (action.type) {
+    case 'SELECT_YEAR':
+    return action.years.map((year)=> {return {id:year.id, name:year.name}}) ;
+
+    case 'DESELECT_YEAR':
+      return state.filter((year)=> year.id !== action.id) ;
+
+    case 'DESELECT_YEAR_ALL':
+      return [];
+
     default:
       return state;
   }

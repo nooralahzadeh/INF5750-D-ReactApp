@@ -1,56 +1,65 @@
 var React=require('react');
 var {connect} = require('react-redux');
+var actions = require('actions');
+
 var FilteredMultiSelect = require('react-filtered-multiselect');
 
-// const DHIS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
+const BOOTSTRAP_CLASSES = {
+  filter: 'form-control',
+  select: 'form-control',
+  button: 'btn btn btn-block btn-default',
+  buttonActive: 'btn btn btn-block btn-primary'
+}
+
 
 export var YearForm=React.createClass({
-  getInitialState() {
-  return {
-    selectedOptions: []
-    }
-  },
 
-  handleDeselect(index) {
-    var selectedOptions = this.state.selectedOptions.slice()
-    selectedOptions.splice(index, 1)
-    this.setState({selectedOptions})
-  },
+  // handleDeselect(index) {
+  //   var selectedOptions = this.state.selectedOptions.slice()
+  //   selectedOptions.splice(index, 1)
+  //   this.setState(
+  //     {selectedOptions}
+  //   )
+  // },
+
 
   handleSelectionChange(selectedOptions) {
-    this.setState({selectedOptions})
+    debugger;
+    var {dispatch} = this.props;
+    selectedOptions.map((item)=> dispatch(actions.onSelectYear(item.id,item.name)));
   },
 
   render:function(){
-     var {selectedOptions} = this.state;
-      var {years} = this.props;
-      var year_list = [];
-      years.years.map(function(survey) {
-        var newObject={"id":survey.SurveyYear,"name":survey.SurveyYear};
-        year_list.push(newObject);
-        }
-      );
-
+     //var {selectedOptions} = this.state;
+      var {years,dispatch,selectedYears} = this.props;
       return(
-        <div>
+      <div className="row">
+        <div className="col-md-5">
         <FilteredMultiSelect
-          onChange={this.handleSelectionChange}
-          options={year_list}
-          selectedOptions={selectedOptions}
+          onChange={(selectedOptions)=>{
+            dispatch(actions.onSelectYear(selectedOptions));
+           }}
+           classNames={BOOTSTRAP_CLASSES}
+          options={years.years}
+          selectedOptions={selectedYears}
           textProp="name"
           valueProp="id"
         />
-        {selectedOptions.length === 0 && <p>(nothing selected yet)</p>}
-        {selectedOptions.length > 0 && <ul>
-          {selectedOptions.map((year, i) => <li key={year.id}>
+       </div>
+     <div className="col-md-5">
+        {selectedYears.length === 0 && <p>(nothing selected yet)</p>}
+        {selectedYears.length > 0 && <ul>
+        {selectedYears.map((year, i) => <li key={year.id}>
             {`${year.name} `}
-            <button type="button" onClick={this.handleDeselect.bind(null, i)}>
+            <button type="button" style={{marginLeft: 20}} className="btn btn-default" onClick={()=>{
+                dispatch(actions.onDeSelectYear(year.id));
+            }}>
               &times;
             </button>
           </li>)}
         </ul>}
-
       </div>
+    </div>
     );
     }
   });
@@ -59,4 +68,4 @@ export var YearForm=React.createClass({
           (state) => {
             return state;
           }
-        )(YearForm);
+    )(YearForm);

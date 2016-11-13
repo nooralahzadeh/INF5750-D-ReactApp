@@ -1,4 +1,3 @@
-
 var axios = require('axios');
 var actions = require('actions');
 var store = require('configureStore').configure();
@@ -55,5 +54,33 @@ export function fetchYear (url,country)  {
   }, function (res) {
     throw new Error(res.data.message);
   });
+  };
 };
+
+export var onSelectCountry = (CountryCode,CounrtyName)=>{
+  return {
+    type:'SELECT_COUNRTY',
+    CountryCode,
+    CounrtyName
+  };
+};
+
+export var onSelectYear = (years) =>{
+  return {
+    type:'SELECT_YEAR',
+    years
+  };
+};
+
+export var onDeSelectYear = (id) => {
+  return {
+    type:'DESELECT_YEAR',
+    id
+  };
+};
+
+export var onBackWard = () => {
+  return {
+    type:'DESELECT_YEAR_ALL',
+  };
 };
