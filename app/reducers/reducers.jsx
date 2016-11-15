@@ -62,3 +62,12 @@ export var yearSelectReducer =  (state=[], action) => {
       return state;
   }
 };
+
+export var stepChangeReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'ON_STEP_CHANGE':
+      return action.step;
+    default:
+      return state;
+  };
+};

@@ -12,18 +12,24 @@ export var Main= React.createClass({
   getInitialState:function(){
     return {
       formFail: false
+
     }
   },
 
   render:function(){
-
+    var {dispatch} = this.props;
     return(
+
 
       <Steps
         currentStep={1}
         prevButton='&#8592;'
         nextButton='&#8594;'
-        stepShouldChange={this.stepShouldChange}>
+        stepShouldChange={this.stepShouldChange}
+        onStepChange={(stepNumber)=>{
+          dispatch(actions.onStepChange(stepNumber));
+        }}
+        >
         <Step customNavigator="Counrty">
           <span className="form-title">Select Country</span>
           <CountryForm/>
@@ -44,30 +50,25 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-
-    var {years,selectedYears,dispatch} = this.props;
-    if (years.years.length>0 && selectedYears.length===0) {
+    var {years,dispatch,step} = this.props;
+    if (years.years.length>0) {
        this.setState({
          formFail: false
        });
        return true;
-
-     } else if(selectedYears.length>0){
-          dispatch(actions.onBackWard());
-          this.setState({
-            formFail: false
-          });
-          return true;
      } else {
        this.setState({
          formFail: true
        });
      }
 
-   }
+   },
+
+
+
+
 
 });
-
 export default connect(
         (state) => {
           return state;

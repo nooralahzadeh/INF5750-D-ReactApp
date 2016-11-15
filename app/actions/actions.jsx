@@ -84,3 +84,10 @@ export var onBackWard = () => {
     type:'DESELECT_YEAR_ALL',
   };
 };
+
+export var onStepChange = (step) => {
+    return {
+      type:'ON_STEP_CHANGE',
+      step
+    };
+};

@@ -8,7 +8,7 @@ export var CountryForm=React.createClass({
   render:function(){
 
     //come from redux state
-     var {data,dispatch,selectedCounrty} = this.props;
+     var {data,dispatch,selectedCounrty,selectedYears} = this.props;
 
      var options= data.countires.map((item,key)=>
           <option key={key} value={item.DHS_CountryCode}>
@@ -29,6 +29,10 @@ export var CountryForm=React.createClass({
               dispatch(actions.onSelectCountry(selectCountryCode,selectCountryName));
               var DHS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
               dispatch(actions.fetchYear(DHS_SURVEY_API_URL,selectCountryCode));
+              
+              if(selectedYears.length>0){
+                dispatch(actions.onBackWard());
+              }
 
             }}>
            {options}

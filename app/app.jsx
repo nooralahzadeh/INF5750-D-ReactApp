@@ -33,7 +33,7 @@ ReactDOM.render(
       { /* Tell the Router to use our enhanced history */ }
       <Router history={history}>
         <Route path="/" component={DHISimport}>
-          <Route path="foo" component={Main}/>
+          <Route path=":step" component={Main}/>
         </Route>
       </Router>
     </Provider>,
