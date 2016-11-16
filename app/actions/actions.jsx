@@ -91,3 +91,12 @@ export var onStepChange = (step) => {
       step
     };
 };
+
+export var onCheckBox = (id,checked) => {
+    return {
+
+      type:'ON_CHECKBOX_CHANGE',
+      id,
+      checked
+    };
+};

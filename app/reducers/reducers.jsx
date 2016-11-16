@@ -71,3 +71,24 @@ export var stepChangeReducer = (state = [], action) => {
       return state;
   };
 };
+export var variablesReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'ON_CHECKBOX_CHANGE':
+      return state.map((variable) => {
+        if (variable.id === action.id) {
+          return {
+            ...variable,
+            status: action.checked
+          };
+        } else {
+            return {
+              ...variable,
+              id:action.id,
+              status:action.checked
+            };
+        }
+      });
+    default:
+      return state;
+  };
+};

@@ -2,11 +2,12 @@ var React = require('react');
 var ReactDom = require('react-dom');
 var {connect} = require('react-redux');
 var actions = require('actions');
-var VariableForm=require('VariableForm');
+
 var {Steps, Step} = require('react-multistep-component');
 
 import CountryForm from 'CountryForm';
 import YearForm from 'YearForm';
+import VariableForm from 'VariableForm';
 
 export var Main= React.createClass({
   getInitialState:function(){
