@@ -92,11 +92,20 @@ export var onStepChange = (step) => {
     };
 };
 
-export var onCheckBox = (id,checked) => {
+export var onSelectCheckBox = (id,checked) => {
     return {
-
-      type:'ON_CHECKBOX_CHANGE',
+      type:'ON_SELECT_CHECKBOX_CHANGE',
       id,
       checked
+
+    };
+};
+
+export var onDeSelectCheckBox = (id,checked) => {
+    return {
+      type:'ON_DESELECT_CHECKBOX_CHANGE',
+      id,
+      checked
+
     };
 };

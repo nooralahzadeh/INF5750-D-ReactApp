@@ -18,7 +18,9 @@ export var Main= React.createClass({
   },
 
   render:function(){
-    var {dispatch} = this.props;
+    var {dispatch,data,years,selectedCounrty} = this.props;
+
+    var message=(!data.isFetching && !years.isFetching) ? '': 'is rendering...';
     return(
 
 
@@ -34,9 +36,15 @@ export var Main= React.createClass({
         <Step customNavigator="Counrty">
           <span className="form-title">Select Country</span>
           <CountryForm/>
-             {
-                this.state.formFail ? <span className="error">The seleted counrty does't have any survey!</span> : ''
-              }
+            <div>
+              <p>{message}</p>
+              <p>
+                  {
+                   (selectedCounrty.code!==undefined) ? (years.years.length>0 ? '' : <span className="error">The seleted counrty does't have any survey!</span>) : ''
+                  }
+              </p>
+
+            </div>
         </Step>
          <Step customNavigator="Year">
           <span className="form-title">Select Year(s)</span>
@@ -51,22 +59,11 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-    var {years,dispatch,step} = this.props;
+    var {years} = this.props;
     if (years.years.length>0) {
-       this.setState({
-         formFail: false
-       });
        return true;
-     } else {
-       this.setState({
-         formFail: true
-       });
      }
-
    },
-
-
-
 
 
 });

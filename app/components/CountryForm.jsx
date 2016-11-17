@@ -10,13 +10,16 @@ export var CountryForm=React.createClass({
     //come from redux state
      var {data,dispatch,selectedCounrty,selectedYears} = this.props;
 
+    // var selected=!selectedCounrty.length>0 ? data.countires[0].CountryName: selectedCounrty.name;
+    var defaultOption= <option disabled selected value> -- select an option -- </option>;
      var options= data.countires.map((item,key)=>
           <option key={key} value={item.DHS_CountryCode}>
             {item.CountryName}
           </option>
         );
 
-      var message='You selected: '+ selectedCounrty.name;
+      var message=!data.isFetching ? 'You selected: '+ selectedCounrty.name : <div className="loader"></div>;
+
       return(
 
         <div>
@@ -29,15 +32,16 @@ export var CountryForm=React.createClass({
               dispatch(actions.onSelectCountry(selectCountryCode,selectCountryName));
               var DHS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
               dispatch(actions.fetchYear(DHS_SURVEY_API_URL,selectCountryCode));
-              
+
               if(selectedYears.length>0){
                 dispatch(actions.onBackWard());
               }
 
             }}>
+          {defaultOption}
            {options}
             </select>
-            <p>{message}</p>
+            <div>{message}</div>
             </div>
         );
         }
@@ -47,4 +51,4 @@ export default connect(
         (state) => {
           return state;
         }
-      )(CountryForm);
+    )(CountryForm);

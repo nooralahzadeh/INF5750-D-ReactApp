@@ -35,7 +35,7 @@ export var yearReducer = (state = {isFetching: false, country:'', years: []}, ac
   }
 };
 
-export var selectCounrtyReducer = (state = [], action) => {
+export var selectCounrtyReducer = (state={}, action) => {
   switch (action.type) {
     case 'SELECT_COUNRTY':
       return {
@@ -72,22 +72,26 @@ export var stepChangeReducer = (state = [], action) => {
   };
 };
 export var variablesReducer = (state = [], action) => {
+
   switch (action.type) {
-    case 'ON_CHECKBOX_CHANGE':
+    case 'ON_SELECT_CHECKBOX_CHANGE':
+      return [
+        ...state,
+        {id:action.id,
+        status:action.checked
+      }
+    ];
+    case 'ON_DESELECT_CHECKBOX_CHANGE':
       return state.map((variable) => {
         if (variable.id === action.id) {
-          return {
-            ...variable,
-            status: action.checked
-          };
-        } else {
-            return {
-              ...variable,
-              id:action.id,
-              status:action.checked
-            };
-        }
-      });
+        return {
+          ...variable,
+          status: action.checked
+        };
+      } else {
+          return  variable;
+      }
+    });
     default:
       return state;
   };
