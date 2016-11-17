@@ -109,3 +109,38 @@ export var onDeSelectCheckBox = (id,checked) => {
 
     };
 };
+
+export var onChangeRadioButton = (id) => {
+    return {
+      type:'ON_CHANGE_RADIO_BUTTON',
+      id
+
+    };
+};
+
+
+//extraction part
+export var startDHSQuery = () => {
+  return {
+    type: 'START_DHS_QUERY'
+  };
+};
+
+export var completeDHSQuery = (data) => {
+  return {
+    type: 'COMPLETE_COUNTRY_FETCH',
+    data
+  };
+};
+
+export function DHSQUERY (url) {
+  return function (dispatch) {
+    dispatch(startDHSQuery());
+  axios.get(url).then(function (res) {
+       var data=res.data.Data;
+       dispatch(completeDHSQuery(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
+  }
+};

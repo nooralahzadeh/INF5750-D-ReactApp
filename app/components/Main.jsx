@@ -44,6 +44,7 @@ export var Main= React.createClass({
                   }
               </p>
 
+
             </div>
         </Step>
          <Step customNavigator="Year">
@@ -51,7 +52,7 @@ export var Main= React.createClass({
             <YearForm/>
         </Step>
         <Step customNavigator="Variables">
-          <span className="form-title">Select variables</span>
+          
           <VariableForm/>
         </Step>
       </Steps>

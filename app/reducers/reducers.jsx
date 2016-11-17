@@ -96,3 +96,14 @@ export var variablesReducer = (state = [], action) => {
       return state;
   };
 };
+
+export var optionReducer = (state = [], action) => {
+
+  switch (action.type) {
+    case 'ON_CHANGE_RADIO_BUTTON':
+      return action.id
+
+    default:
+      return state;
+  };
+};

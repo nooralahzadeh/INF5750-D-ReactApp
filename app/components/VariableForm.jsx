@@ -14,6 +14,13 @@ handlechange:function(e) {
         dispatch(actions.onDeSelectCheckBox(e.target.id,e.target.checked));
       }
     },
+
+    handleOption:function(e) {
+       var {dispatch} = this.props;
+
+          dispatch(actions.onChangeRadioButton(e.target.value));
+
+        },
   render:function(){
       return(
         <div className="row">
@@ -34,34 +41,40 @@ handlechange:function(e) {
                         <input id="CN_NUTS_C_WA3" type="checkbox" onChange={this.handlechange}/><label htmlFor="CN_NUTS_C_WA3">Children severely underweight	</label>
                     </div>
                     <div>
-                        <input id="CP_CLBS_C_SCH" type="checkbox"onChange={this.handlechange} /><label htmlFor="CP_CLBS_C_SCH">Children age 5-14 attending school	</label>
+                        <input id="CP_CLBS_C_SCH" type="checkbox" onChange={this.handlechange} /><label htmlFor="CP_CLBS_C_SCH">Children age 5-14 attending school	</label>
                     </div>
                   </fieldset>
                 </Collapsible>
-                  <Collapsible trigger="Immunisation">
-                    <fieldset className="fieldset">
-                      <div>
-                             <input id="checkbox12" type="checkbox"/><label htmlFor="checkbox12">Checkbox 1</label>
-                      </div>
-                      <div>
-              <input id="checkbox22" type="checkbox"/><label htmlFor="checkbox22">Checkbox 2</label>
+                <Collapsible trigger="Immunisation"/>
+                <Collapsible trigger="Maternal health"/>
+                <Collapsible trigger="Malaria"/>
+
+          </div>
+            <div className="large-5 columns">
+              <fieldset>
+              <span className="form-title">Options</span>
+              <div>
+                <input type="radio" name="option" value="national" id="national" required onChange={this.handleOption}/>
+                  <label htmlFor="national">Data-National</label>
               </div>
               <div>
-            <input id="checkbox32" type="checkbox"/><label htmlFor="checkbox32">Checkbox 3</label>
+              <input type="radio" name="option" value="subnational" id="subnational" onChange={this.handleOption} />
+                <label htmlFor="subnational">Data-Subnational</label>
+              </div>
+              <div>
+              <input type="radio" name="option" value="all" id="all" onChange={this.handleOption} />
+                <label htmlFor="all">Data-All</label>
+              </div>
+              </fieldset>
             </div>
-                    </fieldset>
-                </Collapsible>
           </div>
-            <div className="large-3 columns">
-            <p>another panel</p>
-            </div>
-            </div>
 
 
       );
     }
   });
 
+//http://api.dhsprogram.com/rest/dhs/data?breakdown=national&indicatorIds=CN_NUTS_C_HA2,CN_NUTS_C_WH2&countryIds=EG&surveyIds=EG2000DHS&f=json
   export default connect(
             (state) => {
               return state;
