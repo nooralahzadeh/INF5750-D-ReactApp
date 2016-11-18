@@ -24,7 +24,7 @@ export var ImportModal = React.createClass({
             Import
           </button>
           <a className="alert button float-right" onClick={this.handleImportModal}>Cancel</a>
-            // onClick={()=>{dispatch(actions.hideImportModel(false));}}
+
       </div>
     );
     var $modal=$(ReactDOMServer.renderToString(modalMarkup));
@@ -46,11 +46,9 @@ export var ImportModal = React.createClass({
 
   render: function () {
 
-
-
     return (
       <div>
-
+        
       </div>
 
     );
