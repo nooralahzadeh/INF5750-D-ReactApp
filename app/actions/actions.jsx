@@ -144,3 +144,18 @@ export function DHSQUERY (url) {
   });
   }
 };
+
+// import modal
+export var showImportModel = (show) => {
+  return {
+    type: 'SHOW_IMPORT_MODAL',
+    show
+  };
+};
+
+export var hideImportModel = (show) => {
+  return {
+    type: 'HIDE_IMPORT_MODAL',
+    show
+  };
+};

@@ -107,3 +107,16 @@ export var optionReducer = (state = [], action) => {
       return state;
   };
 };
+
+
+export var importModalReducer = (state=false, action) => {
+
+  switch (action.type) {
+    case 'SHOW_IMPORT_MODAL':
+      return true;
+    case 'HIDE_IMPORT_MODAL':
+      return false;
+    default:
+      return state;
+  };
+};

@@ -1,12 +1,15 @@
 var React=require('react');
 var ReactDom = require('react-dom');
 import Collapsible from 'react-collapsible';
+import ImportModal from 'ImportModal';
 var {connect} = require('react-redux');
 var actions = require('actions');
+
 
 export var VariableForm=React.createClass({
 
 handlechange:function(e) {
+
    var {dispatch} = this.props;
     if(e.target.checked){
         dispatch(actions.onSelectCheckBox(e.target.id,e.target.checked));
@@ -17,14 +20,32 @@ handlechange:function(e) {
 
     handleOption:function(e) {
        var {dispatch} = this.props;
-
           dispatch(actions.onChangeRadioButton(e.target.value));
 
         },
 
+    handleImprtModal:function(){
+      var {dispatch} = this.props;
+        dispatch(actions.showImportModel(true));
+      },
+
   render:function(){
 
+  var {dispatch,showModal} = this.props;
 
+  function renderImportModal(){
+
+        if (showModal){
+          return(
+            <ImportModal/>
+          )
+        }
+        else {
+            return (
+              <p></p>
+            )
+          }
+      }
 
       return(
         <div>
@@ -72,29 +93,14 @@ handlechange:function(e) {
               </div>
               </fieldset>
 
-
-
-
-
-
             </div>
           </div>
 
           <div>
-            <a className="success button float-right" href="#">Import</a>
-
+            <a className="success button float-right" href="#" onClick={this.handleImprtModal}>Import</a>
           </div>
-
-          <div className="reveal" id="exampleModal1" data-reveal>
-          <h1>Awesome. I Have It.</h1>
-          <p className="lead">Your couch. It is mine.</p>
-          <p> I m a cool paragraph that lives inside of an even cooler modal. Wins!</p>
-          <button className="close-button" data-close aria-label="Close modal" type="button">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          </div>
- <p><a data-open="exampleModal1">Click me for a modal</a></p>
-          </div>
+        {renderImportModal()}
+    </div>
 
       );
     }

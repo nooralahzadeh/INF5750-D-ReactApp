@@ -39,7 +39,7 @@ export var CountryForm=React.createClass({
 
             }}>
           {defaultOption}
-           {options}
+          {options}
             </select>
             <div>{message}</div>
             </div>
