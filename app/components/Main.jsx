@@ -7,7 +7,7 @@ var {Steps, Step} = require('react-multistep-component');
 
 import CountryForm from 'CountryForm';
 import YearForm from 'YearForm';
-import VariableForm from 'VariableForm';
+import VariableForm from 'VariableForm';  
 
 export var Main= React.createClass({
   getInitialState:function(){
@@ -52,7 +52,7 @@ export var Main= React.createClass({
             <YearForm/>
         </Step>
         <Step customNavigator="Variables">
-          
+
           <VariableForm/>
         </Step>
       </Steps>

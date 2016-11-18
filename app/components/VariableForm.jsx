@@ -21,8 +21,13 @@ handlechange:function(e) {
           dispatch(actions.onChangeRadioButton(e.target.value));
 
         },
+
   render:function(){
+
+
+
       return(
+        <div>
         <div className="row">
           <div className="large-7 columns">
                 <Collapsible trigger="Child health">
@@ -66,9 +71,30 @@ handlechange:function(e) {
                 <label htmlFor="all">Data-All</label>
               </div>
               </fieldset>
+
+
+
+
+
+
             </div>
           </div>
 
+          <div>
+            <a className="success button float-right" href="#">Import</a>
+
+          </div>
+
+          <div className="reveal" id="exampleModal1" data-reveal>
+          <h1>Awesome. I Have It.</h1>
+          <p className="lead">Your couch. It is mine.</p>
+          <p> I m a cool paragraph that lives inside of an even cooler modal. Wins!</p>
+          <button className="close-button" data-close aria-label="Close modal" type="button">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          </div>
+ <p><a data-open="exampleModal1">Click me for a modal</a></p>
+          </div>
 
       );
     }
