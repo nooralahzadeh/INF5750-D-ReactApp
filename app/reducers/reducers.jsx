@@ -120,3 +120,20 @@ export var importModalReducer = (state=false, action) => {
       return state;
   };
 };
+
+
+export var importDHSReducer = (state = {isFetching: false, data:undefined}, action) => {
+  switch (action.type) {
+    case 'START_DHS_QUERY':
+      return {
+        isFetching: true,
+      };
+    case 'COMPLETE_DHS_FETCH':
+      return {
+        isFetching: false,
+        data:action.data
+      }  ;
+    default:
+      return state;
+  }
+};

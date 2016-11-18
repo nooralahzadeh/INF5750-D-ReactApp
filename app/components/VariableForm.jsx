@@ -1,12 +1,30 @@
 var React=require('react');
-var ReactDom = require('react-dom');
 import Collapsible from 'react-collapsible';
-import ImportModal from 'ImportModal';
 var {connect} = require('react-redux');
 var actions = require('actions');
+var Modal = require('react-modal');
+
+const customStyles = {
+    content : {
+    position                   : 'absolute',
+    top                        : '100px',
+    left                       : '350px',
+    right                      : '350px',
+    bottom                     : '200px',
+    border                     : '1px solid #ccc',
+    background                 : '#fff',
+    overflow                   : 'auto',
+    WebkitOverflowScrolling    : 'touch',
+    borderRadius               : '4px',
+    outline                    : 'none',
+    padding                    : '20px'
+    }
+  };
+
 
 
 export var VariableForm=React.createClass({
+
 
 handlechange:function(e) {
 
@@ -22,31 +40,27 @@ handlechange:function(e) {
        var {dispatch} = this.props;
           dispatch(actions.onChangeRadioButton(e.target.value));
 
-        },
+      },
 
-    handleImprtModal:function(){
+    handleImportModal:function(){
       var {dispatch} = this.props;
         dispatch(actions.showImportModel(true));
+
+        dispatch(actions.dhsQuery(url))
+      },
+
+    afterOpenModal: function() {
+          console.log('after open');
+      },
+
+    closeModal: function() {
+        var {dispatch} = this.props;
+        dispatch(actions.hideImportModel(false));
       },
 
   render:function(){
 
-  var {dispatch,showModal} = this.props;
-
-  function renderImportModal(){
-
-        if (showModal){
-          return(
-            <ImportModal/>
-          )
-        }
-        else {
-            return (
-              <p></p>
-            )
-          }
-      }
-
+    var {dispatch,showModal} = this.props;
       return(
         <div>
         <div className="row">
@@ -97,11 +111,52 @@ handlechange:function(e) {
           </div>
 
           <div>
-            <a className="success button float-right" href="#" onClick={this.handleImprtModal}>Import</a>
+            <a className="success button float-right" href="#" onClick={this.handleImportModal}>Import</a>
           </div>
-        {renderImportModal()}
-    </div>
+          <div>
+            <Modal
+                isOpen={showModal}
+                onAfterOpen={this.afterOpenModal}
+                onRequestClose={this.closeModal}
+                style={customStyles}
+                shouldCloseOnOverlayClick={false}
+                contentLabel="Import"
+            >
 
+              <div>
+                  <label>Map organization units
+                    <select>
+                      <option value="husker">Husker</option>
+                      <option value="starbuck">Starbuck</option>
+                      <option value="hotdog">Hot Dog</option>
+                      <option value="apollo">Apollo</option>
+                    </select>
+                  </label>
+                  <div className="row">
+                  <div className="medium-5 columns">
+                    <p>here will come somethings!</p>
+                  </div>
+                  <div className="medium-5 columns">
+                    <label>
+                        <select multiple>
+                          <option value="showboat">Showboat</option>
+                          <option value="redwing">Redwing</option>
+                          <option value="narcho">Narcho</option>
+                          <option value="hardball">Hardball</option>
+                        </select>
+                    </label>
+                    </div>
+                  </div>
+            </div>
+
+            <div>
+                <a className="success button float-right" href="#" onClick>Import</a>
+                <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
+            </div>
+
+            </Modal>
+          </div>
+    </div>
       );
     }
   });

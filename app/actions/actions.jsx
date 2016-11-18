@@ -128,12 +128,12 @@ export var startDHSQuery = () => {
 
 export var completeDHSQuery = (data) => {
   return {
-    type: 'COMPLETE_COUNTRY_FETCH',
+    type: 'COMPLETE_DHS_QUERY',
     data
   };
 };
 
-export function DHSQUERY (url) {
+export function dhsQuery (url) {
   return function (dispatch) {
     dispatch(startDHSQuery());
   axios.get(url).then(function (res) {

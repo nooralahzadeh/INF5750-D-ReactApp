@@ -7,7 +7,7 @@ var {Steps, Step} = require('react-multistep-component');
 
 import CountryForm from 'CountryForm';
 import YearForm from 'YearForm';
-import VariableForm from 'VariableForm';  
+import VariableForm from 'VariableForm';
 
 export var Main= React.createClass({
   getInitialState:function(){
@@ -40,7 +40,9 @@ export var Main= React.createClass({
               <p>{message}</p>
               <p>
                   {
-                   (selectedCounrty.code!==undefined) ? (years.years.length>0 ? '' : <span className="error">The seleted counrty does't have any survey!</span>) : ''
+                    (years.isFetching) ?'':
+                    ((selectedCounrty.code!==undefined) ? ( (years.years.length>0 && !years.isFetching)?
+                        '' : <span className="error">The seleted counrty does't have any survey!</span>) : '')
                   }
               </p>
 

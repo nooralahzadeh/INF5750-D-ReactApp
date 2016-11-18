@@ -21,6 +21,12 @@ store.dispatch(actions.fetchCountires(DHS_COUNTRY_API_URL));
 // load foundation'
 require('style!css!foundation-sites/dist/foundation.min.css');
 $(document).foundation();
+$(document).on('closed.zf.reveal', '[data-reveal]', () => {
+    console.log('A modal closed!');
+    store.dispatch(actions.hideImportModel(false));
+    // Dispatch some action
+  });
+
 
 //App css
 require('style!css!sass!applicationStyles');

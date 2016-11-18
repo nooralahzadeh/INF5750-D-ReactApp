@@ -32,7 +32,6 @@ export var CountryForm=React.createClass({
               dispatch(actions.onSelectCountry(selectCountryCode,selectCountryName));
               var DHS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
               dispatch(actions.fetchYear(DHS_SURVEY_API_URL,selectCountryCode));
-
               if(selectedYears.length>0){
                 dispatch(actions.onBackWard());
               }

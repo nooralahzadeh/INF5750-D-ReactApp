@@ -1,7 +1,7 @@
 var redux = require('redux');
 import Thunk from 'redux-thunk';
 import { syncHistoryWithStore, routerReducer} from 'react-router-redux';
-var {countryReducer, yearReducer,selectCounrtyReducer,yearSelectReducer,stepChangeReducer,variablesReducer,optionReducer,importModalReducer} = require('reducers');
+var {countryReducer, yearReducer,selectCounrtyReducer,yearSelectReducer,stepChangeReducer,variablesReducer,optionReducer,importModalReducer,importDHSReducer} = require('reducers');
 
 export var configure = (initialState = {}) => {
   // Add the reducer to your store on the `routing` key
@@ -14,6 +14,7 @@ export var configure = (initialState = {}) => {
     indicators:variablesReducer,
     breakdown:optionReducer,
     showModal:importModalReducer,
+    importDate:importDHSReducer,
     routing: routerReducer
 
   });

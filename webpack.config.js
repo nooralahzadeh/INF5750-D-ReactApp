@@ -26,7 +26,6 @@ module.exports={
       YearForm: 'app/components/YearForm.jsx',
       VariableForm: 'app/components/VariableForm.jsx',
       DHISimport:'app/components/DHISimport.jsx',
-      ImportModal: 'app/components/ImportModal.jsx',
       Nav:'app/components/Nav.jsx',
       actions: 'app/actions/actions.jsx',
       reducers: 'app/reducers/reducers.jsx',

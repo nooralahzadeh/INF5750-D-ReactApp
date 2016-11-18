@@ -18,6 +18,7 @@
     "react-dnr": "^0.3.5",
     "react-dom": "^15.0",
     "react-filtered-multiselect": "^0.4.2",
+    "react-modal": "^1.5.2",
     "react-multistep-component": "0.0.5",
     "react-router": "^2.0.0",
     "react-router-redux": "^4.0.7",
