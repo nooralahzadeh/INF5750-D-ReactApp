@@ -8,7 +8,7 @@ export var CountryForm=React.createClass({
   render:function(){
 
     //come from redux state
-     var {data,dispatch,selectedCounrty,selectedYears} = this.props;
+     var {data,dispatch,selectedCounrty,selectedYears,indicators,breakdown} = this.props;
 
     // var selected=!selectedCounrty.length>0 ? data.countires[0].CountryName: selectedCounrty.name;
     var defaultOption= <option disabled selected value> -- select an option -- </option>;

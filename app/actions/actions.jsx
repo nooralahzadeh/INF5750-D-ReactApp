@@ -134,10 +134,11 @@ export var completeDHSQuery = (data) => {
 };
 
 export function dhsQuery (url) {
+
   return function (dispatch) {
     dispatch(startDHSQuery());
   axios.get(url).then(function (res) {
-       var data=res.data.Data;
+       var data=res.data;
        dispatch(completeDHSQuery(data))
   }, function (res) {
     throw new Error(res.data.message);
@@ -145,17 +146,75 @@ export function dhsQuery (url) {
   }
 };
 
-// import modal
-export var showImportModel = (show) => {
+export var dhsQueryBuilder = (query) => {
   return {
-    type: 'SHOW_IMPORT_MODAL',
-    show
+    type: 'DHS_QUERY_BUILDER',
+    query
   };
 };
 
-export var hideImportModel = (show) => {
+export var startDHISGETSQuery = () => {
   return {
-    type: 'HIDE_IMPORT_MODAL',
-    show
+    type: 'START_DHIS_GET_QUERY'
+  };
+};
+
+export var completeDHISGETQuery = (data) => {
+  return {
+    type: 'COMPLETE_DHIS_GET_QUERY',
+    data
+  };
+};
+
+export function dhisGetQuery (url) {
+  const basicAuth = `Basic ${btoa('admin:district')}`;
+  return function (dispatch) {
+    dispatch(startDHISGETSQuery());
+  axios.get(url, {
+      headers: { Authorization: basicAuth,
+        'Content-Type': 'application/json' }
+    }).then(function (res) {
+       var data=res.data;
+       dispatch(completeDHISGETQuery(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
+  }
+};
+
+export var onSelectOrgLevel = (orgCode,orgName)=>{
+  return {
+    type:'SELECT_ORG_LEVEL',
+    orgCode,
+    orgName
+  };
+};
+
+export var startLevelFetch = (org) => {
+  return {
+    type: 'START_LEVEL_FETCH',
+    org
+  };
+};
+
+export var completeLevelFetch = (org,data) => {
+  return {
+    type: 'COMPLETE_LEVEL_FETCH',
+    org,
+    data
+  };
+};
+
+//const DHISS_
+export function fetchLevels (url,org)  {
+  return function (dispatch) {
+    dispatch(startLevelFetch(org));
+  var requestUrl = `${url}?countryIds=${org}`;
+  axios.get(requestUrl).then(function (res) {
+       var data=res.data.Data;
+       dispatch(completeLevelFetch(org,data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
   };
 };

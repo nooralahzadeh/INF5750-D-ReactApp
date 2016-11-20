@@ -62,7 +62,7 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-    var {years} = this.props;
+    var {years,} = this.props;
     if (years.years.length>0) {
        return true;
      }

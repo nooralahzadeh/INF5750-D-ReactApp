@@ -97,29 +97,17 @@ export var variablesReducer = (state = [], action) => {
   };
 };
 
-export var optionReducer = (state = [], action) => {
+export var optionReducer = (state ='', action) => {
 
   switch (action.type) {
     case 'ON_CHANGE_RADIO_BUTTON':
       return action.id
-
     default:
       return state;
   };
 };
 
 
-export var importModalReducer = (state=false, action) => {
-
-  switch (action.type) {
-    case 'SHOW_IMPORT_MODAL':
-      return true;
-    case 'HIDE_IMPORT_MODAL':
-      return false;
-    default:
-      return state;
-  };
-};
 
 
 export var importDHSReducer = (state = {isFetching: false, data:undefined}, action) => {
@@ -128,10 +116,73 @@ export var importDHSReducer = (state = {isFetching: false, data:undefined}, acti
       return {
         isFetching: true,
       };
-    case 'COMPLETE_DHS_FETCH':
+    case 'COMPLETE_DHS_QUERY':
       return {
         isFetching: false,
         data:action.data
+      }  ;
+    default:
+      return state;
+  }
+};
+
+export var dhsQueryBuilderReducer = (state =[], action) => {
+  switch (action.type) {
+    case 'DHS_QUERY_BUILDER':
+     return [
+       action.query
+     ];
+
+    default:
+      return state;
+  };
+};
+
+
+export var getDHISReducer = (state = {isFetching: false, data:undefined}, action) => {
+  switch (action.type) {
+    case 'START_DHIS_GET_QUERY':
+      return {
+        isFetching: true,
+      };
+    case 'COMPLETE_DHIS_GET_QUERY':
+      return {
+        isFetching: false,
+        data:action.data
+      };
+    default:
+      return state;
+  }
+};
+
+
+export var selectOrgReducer = (state={}, action) => {
+  switch (action.type) {
+    case 'SELECT_ORG_LEVEL':
+      return {
+        code:action.orgCode,
+        name:action.orgName
+      }
+    default:
+      return state;
+  };
+};
+
+
+
+export var levelReducer = (state = {isFetching: false, org:'', levels: []}, action) => {
+  switch (action.type) {
+    case 'START_LEVEL_FETCH':
+      return {
+        isFetching: true,
+        org:action.org,
+        levels: []
+      };
+    case 'COMPLETE_LEVEL_FETCH':
+      return {
+        isFetching: false,
+        org:action.org,
+        levels: action.data.map((item)=>{ return {id:item.SurveyYear, name:item.SurveyYear}})
       }  ;
     default:
       return state;

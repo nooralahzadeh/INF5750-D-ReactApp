@@ -1,8 +1,10 @@
 var React=require('react');
+var Loading = require('react-loading');
 import Collapsible from 'react-collapsible';
 var {connect} = require('react-redux');
 var actions = require('actions');
 var Modal = require('react-modal');
+var store = require('configureStore').configure();
 
 const customStyles = {
     content : {
@@ -22,8 +24,44 @@ const customStyles = {
   };
 
 
+const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
+const DHIS_GET_ORG_URL='https://play.dhis2.org/demo/api/organisationUnits?paging=false&level=2'
 
 export var VariableForm=React.createClass({
+
+  getInitialState: function() {
+     return {show: false,
+      checked:false,
+      isFetching:false};
+   },
+
+ queryBuilder:function(){
+  var{dispatch,selectedCounrty,selectedYears,indicators,breakdown}=this.props;
+
+      if (selectedYears.length>0){
+        var surveyYear= selectedYears.map(function(yr){
+          return yr.id;
+          }).join(",");
+
+      }
+
+    var inds=indicators.filter(indicator => indicator.status);
+     if(inds.length>0){
+       var indicatorIds= inds.map(function(ind){
+         return ind.id;
+         }).join(",");
+
+      }
+
+      if(breakdown!==''){
+        var breakdown=breakdown;
+      }
+
+   var requestUrl = `${DHS_DATA_API_URL}?countryIds=${selectedCounrty.code}&surveyYear=${surveyYear}&indicatorIds=${indicatorIds}&breakdown=${breakdown}`;
+   dispatch(actions.dhsQuery(requestUrl));
+
+  // dispatch(actions.dhisGetQuery(DHIS_GET_ORG_URL));
+},
 
 
 handlechange:function(e) {
@@ -38,29 +76,59 @@ handlechange:function(e) {
 
     handleOption:function(e) {
        var {dispatch} = this.props;
-          dispatch(actions.onChangeRadioButton(e.target.value));
+       dispatch(actions.onChangeRadioButton(e.target.value));
 
       },
 
-    handleImportModal:function(){
+componentWillReceiveProps(nextProps){
+
+  var{importData,step,orgUnits}=nextProps;
+  if (importData.isFetching && orgUnits.isFetching){
+        this.setState({isFetching:true,show:false});
+      }else if(importData.data!==undefined && step===3) {
+         this.setState({show:true,
+                  isFetching:false
+              });
+      }
+  },
+
+  handleImportModal:function(){
       var {dispatch} = this.props;
-        dispatch(actions.showImportModel(true));
-
-        dispatch(actions.dhsQuery(url))
+      this.queryBuilder();
+      debugger;
       },
 
-    afterOpenModal: function() {
-          console.log('after open');
-      },
+  afterOpenModal: function() {
+
+    },
 
     closeModal: function() {
-        var {dispatch} = this.props;
-        dispatch(actions.hideImportModel(false));
+      var{importData}=this.props;
+      importData.data=undefined;
+      importData.isFetching=false;
+      this.setState({show:false});
       },
+
+
 
   render:function(){
 
-    var {dispatch,showModal} = this.props;
+    var {dispatch,showModal,data,levels} = this.props;
+
+    var isloading= this.state.isFetching ? <Loading type='bubbles' color='#e3e3e3' /> : '';
+    //option for organization units
+    var defaultOption= <option disabled selected value> -- select an option -- </option>;
+    var unit_options= data.countires.map((item,key)=>
+         <option key={key} value={item.DHS_CountryCode}>
+           {item.CountryName}
+         </option>
+       );
+
+    var level_options= levels.levels.map((item,key)=>
+         <option key={key} value={item.id}>
+           {item.name}
+         </option>
+       );
       return(
         <div>
         <div className="row">
@@ -114,47 +182,50 @@ handlechange:function(e) {
             <a className="success button float-right" href="#" onClick={this.handleImportModal}>Import</a>
           </div>
           <div>
+          {isloading}
             <Modal
-                isOpen={showModal}
-                onAfterOpen={this.afterOpenModal}
-                onRequestClose={this.closeModal}
-                style={customStyles}
-                shouldCloseOnOverlayClick={false}
-                contentLabel="Import"
-            >
+                  isOpen={this.state.show}
+                  onAfterOpen={this.afterOpenModal}
+                  onRequestClose={this.closeModal}
+                  style={customStyles}
+                  shouldCloseOnOverlayClick={false}
+                  contentLabel="Import"
+              >
+                <div>
+                    <label>Map organization units
+                      <select  ref="selectOrgLevel"
+                        onChange={()=>{
+                           var selectOrgCode = this.refs.selectOrgLevel.value;
+                           var selectOrgName=this.refs.selectOrgLevel.options
+                                        [this.refs.selectOrgLevel.selectedIndex].text;
+                          dispatch(actions.onSelectOrgLevel(selectOrgCode,selectOrgName));
+                          var DHS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
+                          dispatch(actions.fetchLevels(DHS_SURVEY_API_URL,selectOrgCode));
+                      }}  >
+                     {defaultOption}
+                     {unit_options}
+                       </select>
+                    </label>
+
+                    <div className="row">
+                    <div className="medium-5 columns">
+                      <p>here will come somethings!</p>
+                    </div>
+                    <div className="medium-5 columns">
+                      <label>
+                          <select multiple >
+                            {level_options}
+                          </select>
+                      </label>
+                      </div>
+                    </div>
+              </div>
 
               <div>
-                  <label>Map organization units
-                    <select>
-                      <option value="husker">Husker</option>
-                      <option value="starbuck">Starbuck</option>
-                      <option value="hotdog">Hot Dog</option>
-                      <option value="apollo">Apollo</option>
-                    </select>
-                  </label>
-                  <div className="row">
-                  <div className="medium-5 columns">
-                    <p>here will come somethings!</p>
-                  </div>
-                  <div className="medium-5 columns">
-                    <label>
-                        <select multiple>
-                          <option value="showboat">Showboat</option>
-                          <option value="redwing">Redwing</option>
-                          <option value="narcho">Narcho</option>
-                          <option value="hardball">Hardball</option>
-                        </select>
-                    </label>
-                    </div>
-                  </div>
-            </div>
-
-            <div>
-                <a className="success button float-right" href="#" onClick>Import</a>
-                <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
-            </div>
-
-            </Modal>
+                  <a className="success button float-right" href="#" onClick={this.import}>Import</a>
+                  <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
+              </div>
+              </Modal>
           </div>
     </div>
       );
@@ -162,8 +233,8 @@ handlechange:function(e) {
   });
 
 //http://api.dhsprogram.com/rest/dhs/data?breakdown=national&indicatorIds=CN_NUTS_C_HA2,CN_NUTS_C_WH2&countryIds=EG&surveyIds=EG2000DHS&f=json
-  export default connect(
-            (state) => {
-              return state;
-            }
-      )(VariableForm);
+export default connect(
+  (state) => {
+    return state;
+  }
+)(VariableForm);
