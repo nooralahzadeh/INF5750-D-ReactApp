@@ -1,7 +1,7 @@
 var redux = require('redux');
 import Thunk from 'redux-thunk';
 import { syncHistoryWithStore, routerReducer} from 'react-router-redux';
-var {countryReducer, yearReducer,selectCounrtyReducer,yearSelectReducer,stepChangeReducer,variablesReducer,optionReducer,importDHSReducer,dhsQueryBuilderReducer,getDHISReducer,selectOrgReducer,levelReducer} = require('reducers');
+var {countryReducer, yearReducer,selectCounrtyReducer,yearSelectReducer,stepChangeReducer,variablesReducer,optionReducer,importDHSReducer,dhsQueryBuilderReducer,getDHISReducer,selectOrgLevelReducer,orgReducer,orgSelectReducer,showModalReducer} = require('reducers');
 
 export var configure = (initialState = {}) => {
   // Add the reducer to your store on the `routing` key
@@ -15,14 +15,17 @@ export var configure = (initialState = {}) => {
     breakdown:optionReducer,
     query:dhsQueryBuilderReducer,
     importData:importDHSReducer,
-    orgUnits:getDHISReducer,
-    selectOrgLevel:selectOrgReducer,
-    levels:levelReducer,
+    orgUnitsLevels:getDHISReducer,
+    selectOrgLevel:selectOrgLevelReducer,
+    orgs:orgReducer,
+    selectedOrgs:orgSelectReducer,
+    showModal:showModalReducer,
     routing: routerReducer
 
   });
 
-  var store = redux.createStore(reducer,initialState,
+
+var store = redux.createStore(reducer,initialState,
    redux.compose( redux.applyMiddleware(Thunk),
     window.devToolsExtension ? window.devToolsExtension() : f => f
   ));

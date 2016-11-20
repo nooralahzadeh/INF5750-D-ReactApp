@@ -3,6 +3,7 @@ var ReactDom = require('react-dom');
 var {connect} = require('react-redux');
 var actions = require('actions');
 
+
 var {Steps, Step} = require('react-multistep-component');
 
 import CountryForm from 'CountryForm';
@@ -20,7 +21,7 @@ export var Main= React.createClass({
   render:function(){
     var {dispatch,data,years,selectedCounrty} = this.props;
 
-    var message=(!data.isFetching && !years.isFetching) ? '': 'is rendering...';
+    var message=(!data.isFetching && !years.isFetching) ? '': <div className="loader"></div>;
     return(
 
 
@@ -62,7 +63,7 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-    var {years,} = this.props;
+    var {years} = this.props;
     if (years.years.length>0) {
        return true;
      }

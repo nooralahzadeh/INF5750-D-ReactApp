@@ -98,7 +98,6 @@ export var variablesReducer = (state = [], action) => {
 };
 
 export var optionReducer = (state ='', action) => {
-
   switch (action.type) {
     case 'ON_CHANGE_RADIO_BUTTON':
       return action.id
@@ -120,10 +119,15 @@ export var importDHSReducer = (state = {isFetching: false, data:undefined}, acti
       return {
         isFetching: false,
         data:action.data
-      }  ;
+        }  ;
+    case 'EMPTY_IMPORT_DATA':
+        return {
+          isFetching: false,
+          data:undefined
+        } ;
     default:
       return state;
-  }
+  };
 };
 
 export var dhsQueryBuilderReducer = (state =[], action) => {
@@ -139,11 +143,12 @@ export var dhsQueryBuilderReducer = (state =[], action) => {
 };
 
 
-export var getDHISReducer = (state = {isFetching: false, data:undefined}, action) => {
+export var getDHISReducer = (state = {isFetching: false, data:[]}, action) => {
   switch (action.type) {
     case 'START_DHIS_GET_QUERY':
       return {
         isFetching: true,
+        data:[]
       };
     case 'COMPLETE_DHIS_GET_QUERY':
       return {
@@ -156,13 +161,10 @@ export var getDHISReducer = (state = {isFetching: false, data:undefined}, action
 };
 
 
-export var selectOrgReducer = (state={}, action) => {
+export var selectOrgLevelReducer = (state=[], action) => {
   switch (action.type) {
     case 'SELECT_ORG_LEVEL':
-      return {
-        code:action.orgCode,
-        name:action.orgName
-      }
+      return action.level;
     default:
       return state;
   };
@@ -170,21 +172,53 @@ export var selectOrgReducer = (state={}, action) => {
 
 
 
-export var levelReducer = (state = {isFetching: false, org:'', levels: []}, action) => {
+export var orgReducer = (state = {isFetching: false, orgs: []}, action) => {
   switch (action.type) {
-    case 'START_LEVEL_FETCH':
+    case 'START_ORG_FETCH':
       return {
         isFetching: true,
-        org:action.org,
-        levels: []
+        orgs: []
       };
-    case 'COMPLETE_LEVEL_FETCH':
+    case 'COMPLETE_ORG_FETCH':
       return {
         isFetching: false,
-        org:action.org,
-        levels: action.data.map((item)=>{ return {id:item.SurveyYear, name:item.SurveyYear}})
+        orgs: action.data.map((item)=>{ return {id:item.id, name:item.displayName}})
       }  ;
+
+    case 'CLEAR_ORG_ALL':
+        return {
+          isFetching: false,
+          orgs: []
+        }  ;
     default:
       return state;
   }
+};
+
+
+export var orgSelectReducer =  (state=[], action) => {
+  switch (action.type) {
+    case 'SELECT_ORG':
+    return action.orgs.map((org)=> {return {id:org.id, name:org.name}}) ;
+
+    case 'DESELECT_ORG':
+      return state.filter((org)=> org.id !== action.id) ;
+
+    case 'DESELECT_ORG_ALL':
+      return [];
+
+    default:
+      return state;
+  }
+};
+
+export var showModalReducer = (state=false, action) => {
+  switch (action.type) {
+    case 'SHOW_MODAL':
+      return true;
+    case 'HIDE_MODAL':
+      return false;
+    default:
+      return state;
+  };
 };

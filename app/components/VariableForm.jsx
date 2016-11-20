@@ -1,18 +1,27 @@
 var React=require('react');
-var Loading = require('react-loading');
+
 import Collapsible from 'react-collapsible';
 var {connect} = require('react-redux');
 var actions = require('actions');
 var Modal = require('react-modal');
 var store = require('configureStore').configure();
 
+var FilteredMultiSelect = require('react-filtered-multiselect');
+
+const FOUNDATION_CLASSES = {
+  filter: 'form-control',
+  select: 'form-control',
+  button: 'button success hollow',
+  buttonActive: 'btn btn btn-block btn-primary'
+}
+
 const customStyles = {
     content : {
     position                   : 'absolute',
     top                        : '100px',
-    left                       : '350px',
-    right                      : '350px',
-    bottom                     : '200px',
+    left                       : '300px',
+    right                      : '300px',
+    bottom                     : '50px',
     border                     : '1px solid #ccc',
     background                 : '#fff',
     overflow                   : 'auto',
@@ -25,7 +34,7 @@ const customStyles = {
 
 
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
-const DHIS_GET_ORG_URL='https://play.dhis2.org/demo/api/organisationUnits?paging=false&level=2'
+const DHIS_GET_LEVEL_URL='https://play.dhis2.org/test/api/filledOrganisationUnitLevels'
 
 export var VariableForm=React.createClass({
 
@@ -59,8 +68,7 @@ export var VariableForm=React.createClass({
 
    var requestUrl = `${DHS_DATA_API_URL}?countryIds=${selectedCounrty.code}&surveyYear=${surveyYear}&indicatorIds=${indicatorIds}&breakdown=${breakdown}`;
    dispatch(actions.dhsQuery(requestUrl));
-
-  // dispatch(actions.dhisGetQuery(DHIS_GET_ORG_URL));
+   dispatch(actions.dhisGetQuery(DHIS_GET_LEVEL_URL));
 },
 
 
@@ -82,54 +90,61 @@ handlechange:function(e) {
 
 componentWillReceiveProps(nextProps){
 
-  var{importData,step,orgUnits}=nextProps;
-  if (importData.isFetching && orgUnits.isFetching){
-        this.setState({isFetching:true,show:false});
-      }else if(importData.data!==undefined && step===3) {
-         this.setState({show:true,
-                  isFetching:false
-              });
+  var{importData,step,orgUnitsLevels,dispatch}=nextProps;
+  if (importData.data===undefined || !importData.data.Data.length>0){
+        dispatch(actions.hideModal());
+      } else {
+        dispatch(actions.showModal());
       }
+
+  if (orgUnitsLevels.isFetching){
+            this.setState({isFetching:true});
+          }else {
+             this.setState({isFetching:false});
+          }
   },
 
   handleImportModal:function(){
-      var {dispatch} = this.props;
       this.queryBuilder();
-      debugger;
       },
 
   afterOpenModal: function() {
-
+      var {dispatch} = this.props;
+      dispatch(actions.onCancelModalSelectedOrg());
+      dispatch(actions.onCancelModalorgs());
     },
 
     closeModal: function() {
-      var{importData}=this.props;
-      importData.data=undefined;
-      importData.isFetching=false;
-      this.setState({show:false});
+      var {dispatch} = this.props;
+      dispatch(actions.hideModal());
+      dispatch(actions.emptyImportData());
+
       },
 
 
 
   render:function(){
+    var {dispatch,showModal,orgUnitsLevels,orgs,selectedOrgs,importData} = this.props;
 
-    var {dispatch,showModal,data,levels} = this.props;
-
-    var isloading= this.state.isFetching ? <Loading type='bubbles' color='#e3e3e3' /> : '';
+    var isloading= importData.isFetching ? 'is loading...' : '';
+    var isloadingOrg= orgs.isFetching ? 'is loading....' : '';
     //option for organization units
     var defaultOption= <option disabled selected value> -- select an option -- </option>;
-    var unit_options= data.countires.map((item,key)=>
-         <option key={key} value={item.DHS_CountryCode}>
-           {item.CountryName}
-         </option>
-       );
-
-    var level_options= levels.levels.map((item,key)=>
-         <option key={key} value={item.id}>
+    var level_options= orgUnitsLevels.data.map((item,key)=>
+         <option key={key} value={item.level}>
            {item.name}
          </option>
        );
+
+    var org_options= orgs.orgs.map((item,key)=>
+         <option key={key} value={item.id}>
+           {item.displayName}
+         </option>
+      );
+
+
       return(
+
         <div>
         <div className="row">
           <div className="large-7 columns">
@@ -181,10 +196,23 @@ componentWillReceiveProps(nextProps){
           <div>
             <a className="success button float-right" href="#" onClick={this.handleImportModal}>Import</a>
           </div>
+
           <div>
-          {isloading}
+            <p>
+            {
+              (importData.isFetching) ?'':
+              ((importData.data!==undefined) ? ( (importData.data.Data.length>0 && !importData.isFetching)?
+                  '' : <span className="error">There is no data to import!</span>) : '')
+            }
+            </p>
+          </div>
+          <div>{isloading}</div>
+
+          <div>
+
+
             <Modal
-                  isOpen={this.state.show}
+                  isOpen={showModal}
                   onAfterOpen={this.afterOpenModal}
                   onRequestClose={this.closeModal}
                   style={customStyles}
@@ -195,35 +223,59 @@ componentWillReceiveProps(nextProps){
                     <label>Map organization units
                       <select  ref="selectOrgLevel"
                         onChange={()=>{
-                           var selectOrgCode = this.refs.selectOrgLevel.value;
-                           var selectOrgName=this.refs.selectOrgLevel.options
-                                        [this.refs.selectOrgLevel.selectedIndex].text;
-                          dispatch(actions.onSelectOrgLevel(selectOrgCode,selectOrgName));
-                          var DHS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
-                          dispatch(actions.fetchLevels(DHS_SURVEY_API_URL,selectOrgCode));
-                      }}  >
+                          var selectedLevel = this.refs.selectOrgLevel.value;
+                          dispatch(actions.onSelectOrgLevel(selectedLevel));
+                          var DHIS_ORG_QRY_URL='https://play.dhis2.org/test/api/organisationUnits.json';
+                          dispatch(actions.fetchOrgs(DHIS_ORG_QRY_URL,selectedLevel));
+                          dispatch(actions.onCancelModalSelectedOrg());
+                      }} >
                      {defaultOption}
-                     {unit_options}
+                     {level_options}
                        </select>
                     </label>
+                  </div>
 
-                    <div className="row">
-                    <div className="medium-5 columns">
-                      <p>here will come somethings!</p>
-                    </div>
-                    <div className="medium-5 columns">
-                      <label>
-                          <select multiple >
-                            {level_options}
-                          </select>
-                      </label>
-                      </div>
-                    </div>
+              <div className="row">
+                 <div className="large-6 columns">
+                  <FilteredMultiSelect
+                    buttonText="Add"
+                    classNames={FOUNDATION_CLASSES}
+                    onChange={(selectedOptions)=>{
+                     dispatch(actions.onSelectOrg(selectedOptions));
+                    }}
+                    options={orgs.orgs}
+                    selectedOptions={selectedOrgs}
+                    textProp="name"
+                    valueProp="id"
+                  />
+                </div>
+                 <div className="large-6 columns">
+                  <FilteredMultiSelect
+                    buttonText="Remove"
+                    classNames={{
+                      filter: 'form-control',
+                      select: 'form-control',
+                      button: 'button alert hollow',
+                      buttonActive: 'btn btn btn-block btn-primary'
+                    }}
+                    onChange={(deselectedOption)=>{
+                        dispatch(actions.onDeSelectOrg(deselectedOption[0].id));
+                     }}
+                    options={selectedOrgs}
+                    textProp="name"
+                    valueProp="id"
+                  />
+                </div>
+
               </div>
-
               <div>
-                  <a className="success button float-right" href="#" onClick={this.import}>Import</a>
-                  <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
+                <p>{isloadingOrg}</p>
+              </div>
+              <div>
+                  <div>
+                      <a className="success button float-right" href="#" onClick={this.import}>Import</a>
+                      <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
+                  </div>
               </div>
               </Modal>
           </div>

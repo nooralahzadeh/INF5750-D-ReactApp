@@ -1,6 +1,11 @@
 var axios = require('axios');
 var actions = require('actions');
 var store = require('configureStore').configure();
+const config = {
+  auth: {
+    username: 'admin',
+    password: 'district'
+  }}
 
 export var startCounrtyFetch = () => {
   return {
@@ -114,7 +119,6 @@ export var onChangeRadioButton = (id) => {
     return {
       type:'ON_CHANGE_RADIO_BUTTON',
       id
-
     };
 };
 
@@ -167,13 +171,11 @@ export var completeDHISGETQuery = (data) => {
 };
 
 export function dhisGetQuery (url) {
-  const basicAuth = `Basic ${btoa('admin:district')}`;
+
   return function (dispatch) {
     dispatch(startDHISGETSQuery());
-  axios.get(url, {
-      headers: { Authorization: basicAuth,
-        'Content-Type': 'application/json' }
-    }).then(function (res) {
+   axios.get(url, config).then(function (res) {
+
        var data=res.data;
        dispatch(completeDHISGETQuery(data))
   }, function (res) {
@@ -182,39 +184,81 @@ export function dhisGetQuery (url) {
   }
 };
 
-export var onSelectOrgLevel = (orgCode,orgName)=>{
+export var onSelectOrgLevel = (level)=>{
   return {
     type:'SELECT_ORG_LEVEL',
-    orgCode,
-    orgName
+    level
   };
 };
 
-export var startLevelFetch = (org) => {
+export var startOrgFetch = () => {
   return {
-    type: 'START_LEVEL_FETCH',
-    org
+    type: 'START_ORG_FETCH'
   };
 };
 
-export var completeLevelFetch = (org,data) => {
+export var completeOrgFetch = (data) => {
   return {
-    type: 'COMPLETE_LEVEL_FETCH',
-    org,
+    type: 'COMPLETE_ORG_FETCH',
     data
   };
 };
 
 //const DHISS_
-export function fetchLevels (url,org)  {
+export function fetchOrgs (url,level)  {
   return function (dispatch) {
-    dispatch(startLevelFetch(org));
-  var requestUrl = `${url}?countryIds=${org}`;
-  axios.get(requestUrl).then(function (res) {
-       var data=res.data.Data;
-       dispatch(completeLevelFetch(org,data))
+    dispatch(startOrgFetch());
+  var requestUrl = `${url}?level=${level}&paging=false`;
+  axios.get(requestUrl,config).then(function (res) {
+       var data=res.data.organisationUnits;
+       dispatch(completeOrgFetch(data))
   }, function (res) {
     throw new Error(res.data.message);
   });
+  };
+};
+
+
+export var onSelectOrg = (orgs) =>{
+  return {
+    type:'SELECT_ORG',
+    orgs
+  };
+};
+
+export var onDeSelectOrg = (id) => {
+  return {
+    type:'DESELECT_ORG',
+    id
+  };
+};
+
+export var onCancelModalSelectedOrg = () => {
+  return {
+    type:'DESELECT_ORG_ALL',
+  };
+};
+
+export var onCancelModalorgs = () => {
+  return {
+    type:'CLEAR_ORG_ALL',
+  };
+};
+
+export var showModal = () => {
+  return {
+    type:'SHOW_MODAL'
+  };
+};
+
+export var hideModal = () => {
+  return {
+    type:'HIDE_MODAL'
+  };
+};
+
+export var emptyImportData = () => {
+  return {
+    type:'EMPTY_IMPORT_DATA'
   };
 };
