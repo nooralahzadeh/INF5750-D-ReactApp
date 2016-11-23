@@ -1,4 +1,6 @@
 //countires reducer and action generators
+var moment=require('moment');
+
 export var countryReducer = (state = {isFetching: false, countires: []}, action) => {
   switch (action.type) {
     case 'START_COUNTRY_FETCH':
@@ -39,7 +41,8 @@ export var selectCounrtyReducer = (state={}, action) => {
   switch (action.type) {
     case 'SELECT_COUNRTY':
       return {
-        code:action.CountryCode,
+        shortName:action.CountryCode,
+        openingDate:moment().format(),
         name:action.CounrtyName
       }
     default:
@@ -221,4 +224,22 @@ export var showModalReducer = (state=false, action) => {
     default:
       return state;
   };
+};
+
+
+export var importDHISReducer = (state = {isImporting: false, numberofdata:[]}, action) => {
+  switch (action.type) {
+    case 'START_IMPORT_TO_DHIS':
+      return {
+        isImporting: true,
+        data:[]
+      };
+    case 'COMPLETE_IMPORT_TO_DHIS':
+      return {
+        isImporting: false,
+        numberofdata:action.data
+      };
+    default:
+      return state;
+  }
 };

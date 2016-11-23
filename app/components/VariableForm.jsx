@@ -34,8 +34,8 @@ const customStyles = {
 
 
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
-const DHIS_GET_LEVEL_URL='https://play.dhis2.org/test/api/filledOrganisationUnitLevels'
-
+const DHIS_GET_LEVEL_URL='https://play.dhis2.org/test/api/filledOrganisationUnitLevels';
+const DHIS_POST_URL='https://play.dhis2.org/demo/api/metadata';
 export var VariableForm=React.createClass({
 
   getInitialState: function() {
@@ -66,7 +66,7 @@ export var VariableForm=React.createClass({
         var breakdown=breakdown;
       }
 
-   var requestUrl = `${DHS_DATA_API_URL}?countryIds=${selectedCounrty.code}&surveyYear=${surveyYear}&indicatorIds=${indicatorIds}&breakdown=${breakdown}`;
+   var requestUrl = `${DHS_DATA_API_URL}?countryIds=${selectedCounrty.shortName}&surveyYear=${surveyYear}&indicatorIds=${indicatorIds}&breakdown=${breakdown}`;
    dispatch(actions.dhsQuery(requestUrl));
    dispatch(actions.dhisGetQuery(DHIS_GET_LEVEL_URL));
 },
@@ -107,6 +107,14 @@ componentWillReceiveProps(nextProps){
   handleImportModal:function(){
       this.queryBuilder();
       },
+
+ importToDHIS:function(){
+   var{dispatch,selectedCounrty}=this.props;
+   dispatch(actions.importToDHIS(DHIS_POST_URL,selectedCounrty));
+   dispatch(actions.hideModal());
+   dispatch(actions.emptyImportData());
+
+ },
 
   afterOpenModal: function() {
       var {dispatch} = this.props;
@@ -273,7 +281,7 @@ componentWillReceiveProps(nextProps){
               </div>
               <div>
                   <div>
-                      <a className="success button float-right" href="#" onClick={this.import}>Import</a>
+                      <a className="success button float-right" href="#" onClick={this.importToDHIS}>Import</a>
                       <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
                   </div>
               </div>

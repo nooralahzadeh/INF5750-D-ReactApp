@@ -1,11 +1,18 @@
 var axios = require('axios');
+
 var actions = require('actions');
+
 var store = require('configureStore').configure();
 const config = {
   auth: {
     username: 'admin',
     password: 'district'
-  }}
+  },
+  headers: {
+        'content-type':'application/json'
+      }
+
+}
 
 export var startCounrtyFetch = () => {
   return {
@@ -175,7 +182,6 @@ export function dhisGetQuery (url) {
   return function (dispatch) {
     dispatch(startDHISGETSQuery());
    axios.get(url, config).then(function (res) {
-
        var data=res.data;
        dispatch(completeDHISGETQuery(data))
   }, function (res) {
@@ -260,5 +266,44 @@ export var hideModal = () => {
 export var emptyImportData = () => {
   return {
     type:'EMPTY_IMPORT_DATA'
+  };
+};
+
+
+export var startImportToDHIS = () => {
+  return {
+    type: 'START_IMPORT_TO_DHIS'
+  };
+};
+
+export var completeImportToDHIS = (data) => {
+  return {
+    type: 'COMPLETE_IMPORT_TO_DHIS',
+    data
+  };
+};
+
+export function importToDHIS (url,data)  {
+  return function (dispatch) {
+    dispatch(startImportToDHIS());
+   var postUrl = `${url}`;
+  var obj = {
+	  organisationUnits: [data]
+      };
+
+ var importdata=JSON.stringify(obj);
+
+ console.log(importdata)
+  axios.post(postUrl,importdata, config).then(function (res) {
+       var data=res.data;
+       dispatch(completeImportToDHIS(data))
+  }, function (res) {
+    console.log(res);
+    //throw new Error(res.data.message);
+  });
+
+
+
+
   };
 };
