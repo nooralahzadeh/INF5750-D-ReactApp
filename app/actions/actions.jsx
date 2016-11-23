@@ -298,8 +298,7 @@ export function importToDHIS (url,data)  {
        var data=res.data;
        dispatch(completeImportToDHIS(data))
   }, function (res) {
-    console.log(res);
-    //throw new Error(res.data.message);
+    throw new Error(res.data.message);
   });
 
 
