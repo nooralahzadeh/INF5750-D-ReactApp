@@ -5,7 +5,7 @@ var actions = require('actions');
 
 
 var {Steps, Step} = require('react-multistep-component');
-
+import Setup from 'Setup';
 import CountryForm from 'CountryForm';
 import YearForm from 'YearForm';
 import VariableForm from 'VariableForm';
@@ -34,6 +34,10 @@ export var Main= React.createClass({
           dispatch(actions.onStepChange(stepNumber));
         }}
         >
+        <Step customNavigator="Setup">
+          <span className="form-title">Setup</span>
+          <Setup/>
+        </Step>
         <Step customNavigator="Counrty">
           <span className="form-title">Select Country</span>
           <CountryForm/>
@@ -43,7 +47,7 @@ export var Main= React.createClass({
                   {
                     (years.isFetching) ?'':
                     ((selectedCounrty.code!==undefined) ? ( (years.years.length>0 && !years.isFetching)?
-                        '' : <span className="error">The seleted counrty does't have any survey!</span>) : '')
+                        '' : <span className="error">The seleted counrty does not have any survey!</span>) : '')
                   }
               </p>
 
@@ -63,7 +67,10 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-    var {years} = this.props;
+    var {years,step} = this.props;
+    if(step===1){
+      return true;
+    }
     if (years.years.length>0) {
        return true;
      }

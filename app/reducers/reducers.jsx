@@ -1,6 +1,24 @@
 //countires reducer and action generators
 var moment=require('moment');
 
+
+export var setUpReducer = (state = {inProgress: false, data:[]}, action) => {
+  switch (action.type) {
+    case 'START_ORG_CREATION':
+      return {
+        inProgress: true,
+        data:[]
+      };
+    case 'COMPLETE_ORG_CREATION':
+      return {
+        inProgress: false,
+        data:action.data
+      };
+    default:
+      return state;
+  }
+};
+
 export var countryReducer = (state = {isFetching: false, countires: []}, action) => {
   switch (action.type) {
     case 'START_COUNTRY_FETCH':

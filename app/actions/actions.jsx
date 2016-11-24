@@ -14,6 +14,47 @@ const config = {
 
 }
 
+//setup actions
+export var startOrganizationCreation = () => {
+  return {
+    type: 'START_ORG_CREATION'
+  };
+};
+
+
+export var completeOrganizationCreation = (data) => {
+  return {
+    type: 'COMPLETE_ORG_CREATION',
+    data
+  };
+};
+
+export function createOrganizations (url,data)  {
+  return function (dispatch,getState) {
+
+    var  state = getState();
+    debugger;
+
+
+    dispatch(startOrganizationCreation());
+  var postUrl = `${url}`;
+  var obj = {
+	  organisationUnits: [data]
+      };
+
+ var importdata=JSON.stringify(obj);
+
+    axios.post(postUrl,importdata, config).then(function (res) {
+           var data=res.data;
+           dispatch(completeOrganizationCreation(data))
+      }, function (res) {
+        throw new Error(res.data.message);
+      });
+  };
+};
+
+
+//counrty actions
 export var startCounrtyFetch = () => {
   return {
     type: 'START_COUNTRY_FETCH'
@@ -300,9 +341,6 @@ export function importToDHIS (url,data)  {
   }, function (res) {
     throw new Error(res.data.message);
   });
-
-
-
-
   };
+
 };

@@ -15,8 +15,7 @@ store.subscribe(() => {
   console.log('New state', state);
 });
 
-const DHS_COUNTRY_API_URL='http://api.dhsprogram.com/rest/dhs/countries';
-store.dispatch(actions.fetchCountires(DHS_COUNTRY_API_URL));
+
 
 // load foundation'
 require('style!css!foundation-sites/dist/foundation.min.css');

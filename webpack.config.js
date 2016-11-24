@@ -22,6 +22,7 @@ module.exports={
     root:__dirname,
     alias:{
       Main:'app/components/Main.jsx',
+      Setup: 'app/components/Setup.jsx',
       CountryForm: 'app/components/CountryForm.jsx',
       YearForm: 'app/components/YearForm.jsx',
       VariableForm: 'app/components/VariableForm.jsx',
