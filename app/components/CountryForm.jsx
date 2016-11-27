@@ -6,6 +6,22 @@ var actions = require('actions');
 
 export var CountryForm=React.createClass({
 
+componentWillReceiveProps(nextProps){
+
+  // var{subRegions,dhisOrg}=nextProps;
+  //   this.createCountires(subRegions,dhisOrg);
+
+    },
+
+
+createCountires(subRegions,dhisOrg){
+    var{dispatch}=this.props;
+    if(dhisOrg.level===3 && subRegions.data!==undefined ){
+      debugger;
+      const DHIS_POST_URL='https://play.dhis2.org/test/api/metadata';
+      dispatch(actions.createFourthLevel(DHIS_POST_URL,4));
+        }
+    },
   render:function(){
 
     //come from redux state
@@ -20,6 +36,7 @@ export var CountryForm=React.createClass({
         );
 
       var message=!data.isFetching ? 'You selected: '+ selectedCounrty.name : <div className="loader"></div>;
+
 
       return(
 
@@ -36,7 +53,6 @@ export var CountryForm=React.createClass({
               if(selectedYears.length>0){
                 dispatch(actions.onBackWard());
               }
-
             }}>
           {defaultOption}
           {options}

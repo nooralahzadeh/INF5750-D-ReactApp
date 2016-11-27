@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.15.2",
     "express": "^4.14.0",
+    "js-shortid": "^0.1.1",
     "moment": "^2.17.0",
     "react": "^15.0",
     "react-collapsible": "^1.2.0",
@@ -25,7 +26,8 @@
     "react-router": "^2.0.0",
     "react-router-redux": "^4.0.7",
     "react-wizard": "^0.3.4",
-    "redux-thunk": "^2.1.0"
+    "redux-thunk": "^2.1.0",
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.5.1",

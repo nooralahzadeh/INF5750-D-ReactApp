@@ -21,7 +21,9 @@ store.subscribe(() => {
 require('style!css!foundation-sites/dist/foundation.min.css');
 $(document).foundation();
 
-
+// $(document).on('click', 'a.disabled', function(e) {
+//   e.preventDefault();
+// });
 
 //App css
 require('style!css!sass!applicationStyles');

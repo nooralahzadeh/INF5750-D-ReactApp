@@ -2,18 +2,38 @@
 var moment=require('moment');
 
 
-export var setUpReducer = (state = {inProgress: false, data:[]}, action) => {
+export var setUpReducer = (state = {inProgress: false, res:[],data:[], level:undefined}, action) => {
   switch (action.type) {
     case 'START_ORG_CREATION':
       return {
+        ...state,
         inProgress: true,
-        data:[]
       };
     case 'COMPLETE_ORG_CREATION':
       return {
         inProgress: false,
-        data:action.data
+        res:action.res,
+        data:{...action.data},
+        level:action.level
+
       };
+    default:
+      return state;
+  }
+};
+
+export var idDHIDReducer = (state = {isFetching: false, uid:''}, action) => {
+  switch (action.type) {
+    case 'START_GET_ID_DHIS':
+      return {
+        isFetching: true,
+        uid: '',
+      };
+    case 'COMPLETE_GET_ID_DHIS':
+      return {
+        isFetching: false,
+        uid: action.data
+      }  ;
     default:
       return state;
   }
@@ -216,6 +236,59 @@ export var orgReducer = (state = {isFetching: false, orgs: []}, action) => {
   }
 };
 
+export var orgAllReducer = (state = {isFetching: false, orgs: []}, action) => {
+  switch (action.type) {
+    case 'START_ORG_FETCH':
+      return {
+        ...state,
+        isFetching: true
+      };
+    case 'COMPLETE_ORG_FETCH':
+      return {
+        isFetching: false,
+        orgs: action.data.map((item)=>{ return {id:item.id, displayName:item.displayName}})
+      }  ;
+
+    default:
+      return state;
+  }
+};
+
+
+export var regionReducer = (state = {isFetching: false, data: undefined}, action) => {
+  switch (action.type) {
+    case 'START_REGION_FETCH':
+      return {
+        isFetching: true,
+        data:undefined
+      };
+    case 'COMPLETE_REGION_FETCH':
+      return {
+        isFetching: false,
+        data: action.data
+      };
+    default:
+      return state;
+  }
+};
+
+export var subRegionReducer = (state = {isFetching: false, data: undefined}, action) => {
+  switch (action.type) {
+    case 'START_SUB_REGION_FETCH':
+      return {
+        isFetching: true,
+        data:undefined
+      };
+    case 'COMPLETE_SUB_REGION_FETCH':
+      return {
+        isFetching: false,
+        data: action.data
+      };
+    default:
+      return state;
+  }
+};
+
 
 export var orgSelectReducer =  (state=[], action) => {
   switch (action.type) {
@@ -244,8 +317,29 @@ export var showModalReducer = (state=false, action) => {
   };
 };
 
+export var DHISHierarchyReducer = (state = {data:[], levels:[]}, action) => {
+  switch (action.type) {
+    case 'SET_DHIS_HIERARCHY':
 
-export var importDHISReducer = (state = {isImporting: false, numberofdata:[]}, action) => {
+      return {
+        ...state,
+        data:
+        [...state.data,
+          {...action.data}
+        ],
+        levels:[
+          ...state.levels,
+          action.level
+        ]
+
+      };
+    default:
+      return state;
+  }
+};
+
+
+export var importDHISReducer = (state = {isImporting: false, data:[]}, action) => {
   switch (action.type) {
     case 'START_IMPORT_TO_DHIS':
       return {
@@ -255,8 +349,27 @@ export var importDHISReducer = (state = {isImporting: false, numberofdata:[]}, a
     case 'COMPLETE_IMPORT_TO_DHIS':
       return {
         isImporting: false,
-        numberofdata:action.data
+        data:action.data
       };
+    default:
+      return state;
+  }
+};
+
+
+export var levelReducer = (state = {isFetching: false, orgs: []}, action) => {
+  switch (action.type) {
+    case 'START_LEVEL_FETCH':
+      return {
+        ...state,
+        isFetching: true
+      };
+    case 'COMPLETE_LEVEL_FETCH':
+      return {
+        isFetching: false,
+        orgs: action.data
+        } ;
+
     default:
       return state;
   }

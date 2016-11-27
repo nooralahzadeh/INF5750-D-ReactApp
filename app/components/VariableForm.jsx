@@ -35,7 +35,7 @@ const customStyles = {
 
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
 const DHIS_GET_LEVEL_URL='https://play.dhis2.org/test/api/filledOrganisationUnitLevels';
-const DHIS_POST_URL='https://play.dhis2.org/demo/api/metadata';
+const DHIS_POST_URL='https://play.dhis2.org/test/api/metadata';
 export var VariableForm=React.createClass({
 
   getInitialState: function() {
@@ -132,10 +132,10 @@ componentWillReceiveProps(nextProps){
 
 
   render:function(){
-    var {dispatch,showModal,orgUnitsLevels,orgs,selectedOrgs,importData} = this.props;
+    var {dispatch,showModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData} = this.props;
 
     var isloading= importData.isFetching ? 'is loading...' : '';
-    var isloadingOrg= orgs.isFetching ? 'is loading....' : '';
+    var isloadingOrg= dhis_orgs.isFetching ? 'is loading....' : '';
     //option for organization units
     var defaultOption= <option disabled selected value> -- select an option -- </option>;
     var level_options= orgUnitsLevels.data.map((item,key)=>
@@ -144,7 +144,7 @@ componentWillReceiveProps(nextProps){
          </option>
        );
 
-    var org_options= orgs.orgs.map((item,key)=>
+    var org_options= dhis_orgs.orgs.map((item,key)=>
          <option key={key} value={item.id}>
            {item.displayName}
          </option>
@@ -251,7 +251,7 @@ componentWillReceiveProps(nextProps){
                     onChange={(selectedOptions)=>{
                      dispatch(actions.onSelectOrg(selectedOptions));
                     }}
-                    options={orgs.orgs}
+                    options={dhis_orgs.orgs}
                     selectedOptions={selectedOrgs}
                     textProp="name"
                     valueProp="id"

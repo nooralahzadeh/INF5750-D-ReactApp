@@ -1,5 +1,6 @@
 var axios = require('axios');
-
+var moment=require('moment');
+var uid = require('uid');
 var actions = require('actions');
 
 var store = require('configureStore').configure();
@@ -15,6 +16,10 @@ const config = {
 }
 
 //setup actions
+
+
+
+//first level: world
 export var startOrganizationCreation = () => {
   return {
     type: 'START_ORG_CREATION'
@@ -22,36 +27,247 @@ export var startOrganizationCreation = () => {
 };
 
 
-export var completeOrganizationCreation = (data) => {
+export var completeOrganizationCreation = (res,data,level) => {
   return {
     type: 'COMPLETE_ORG_CREATION',
+    res,
+    data,
+    level
+  };
+};
+
+export function createFirstLevel (url,data,level)  {
+  return function (dispatch) {
+      dispatch(startOrganizationCreation());
+      var obj = {
+  	  organisationUnits: [data]
+        };
+
+
+        axios.post(url,JSON.stringify(obj), config).then(function (res) {
+               var res=res.data;
+               dispatch(completeOrganizationCreation(res,data,level));
+               dispatch(setDHISHierarchy(data,level))
+          }, function (res) {
+            throw new Error(res.data.message);
+          });
+      }
+  };
+
+//second level: region
+
+export var setDHISHierarchy = (data,level) => {
+  return {
+    type: 'SET_DHIS_HIERARCHY',
+    data,
+    level
+  };
+};
+
+export function createSecondLevel (url,level)  {
+  return function (dispatch,getState) {
+    dispatch(startOrganizationCreation());
+        var  state = getState();
+        var hierarchy=[];
+        var regions=new Set();
+        state.data.countires.map(country=>regions.add(country.RegionName));
+        for (let region of regions) {
+          var SubregionName=new Set();
+          state.data.countires.map(
+            country=> country.RegionName===region? SubregionName.add(country.SubregionName):''
+          )
+        var element={
+            RegionName:region,
+            SubregionName:[...SubregionName]
+          };
+        hierarchy.push(element);
+        };
+
+
+      //post for region
+        var organisationUnits=[];
+        hierarchy.map(function(element){
+          var region=
+                  {
+                  "name":element.RegionName,
+                  "openingDate":moment().format(),
+                  "shortName":element.RegionName,
+                  "id":uid(11),
+                  "parent":{"id": state.dhisOrg.data.id}
+                };
+          organisationUnits.push(region);
+          dispatch(setDHISHierarchy(region,level));
+        });
+
+            var regions={
+                organisationUnits:organisationUnits
+              };
+
+        axios.post(url,JSON.stringify(regions), config).then(function (res) {
+               var res=res.data;
+               dispatch(completeOrganizationCreation(res,organisationUnits,level))
+          }, function (res) {
+            throw new Error(res.data.message);
+          });
+      }
+    };
+
+//get created codes in dhis for regions
+export var startRegionFetch = () => {
+  return {
+    type: 'START_REGION_FETCH',
+  };
+};
+
+export var completeRegionFetch = (data) => {
+  return {
+    type: 'COMPLETE_REGION_FETCH',
     data
   };
 };
 
-export function createOrganizations (url,data)  {
-  return function (dispatch,getState) {
-
-    var  state = getState();
-    debugger;
-
-
-    dispatch(startOrganizationCreation());
-  var postUrl = `${url}`;
-  var obj = {
-	  organisationUnits: [data]
-      };
-
- var importdata=JSON.stringify(obj);
-
-    axios.post(postUrl,importdata, config).then(function (res) {
-           var data=res.data;
-           dispatch(completeOrganizationCreation(data))
-      }, function (res) {
-        throw new Error(res.data.message);
-      });
+export function fetchRegions (url)  {
+  return function (dispatch) {
+    dispatch(startRegionFetch());
+  axios.get(url, config).then(function (res) {
+      var data=res.data;
+      dispatch(completeRegionFetch(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
   };
 };
+//get created codes in dhis for subregions
+
+export var startSubRegionFetch = () => {
+  return {
+    type: 'START_SUB_REGION_FETCH',
+  };
+};
+
+export var completeSubRegionFetch = (data) => {
+  return {
+    type: 'COMPLETE_SUB_REGION_FETCH',
+    data
+  };
+};
+
+export function fetchSubRegions (url)  {
+  return function (dispatch,getState) {
+    dispatch(startSubRegionFetch());
+    var output=[]
+    var state=getState();
+
+      var data = [],
+          promises = [];
+
+      state.regions.data.organisationUnits.map(function(region){
+        var myUrl =`${url}?filter=parent.id:eq:${region.id}&paging=false`;
+        promises.push(axios.get(myUrl,config))
+      });
+
+      axios.all(promises).then(function(results) {
+          results.forEach(function(response) {
+            data.push(...response.data.organisationUnits);
+          })
+          dispatch(completeSubRegionFetch(data));
+      });
+
+  };
+};
+
+
+
+//SubRegions
+export function createThirdLevel (url,level)  {
+  return function (dispatch,getState) {
+       dispatch(startOrganizationCreation());
+        var  state = getState();
+        var hierarchy=[];
+        var regions=new Set();
+        state.data.countires.map(country=>regions.add(country.RegionName));
+        for (let region of regions) {
+          var SubregionName=new Set();
+
+          state.data.countires.map(
+            country=> country.RegionName===region? SubregionName.add(country.SubregionName):''
+          )
+          var regionWithCode=state.dhisHierarchy.data.filter(element=> element.name===region);
+
+          var element={
+              RegionName:region,
+              RegionCode:regionWithCode[0].id,
+              SubregionName:[...SubregionName]
+            };
+          hierarchy.push(element);
+        };
+      //post for region
+      var organisationUnits=[];
+      for (let region of hierarchy) {
+        for (let element of region.SubregionName) {
+          var subregion=
+                  {
+                  "name":element,
+                  "openingDate":moment().format(),
+                  "id":uid(11),
+                  "shortName":element,
+                  "parent":{"id": region.RegionCode}
+                };
+          organisationUnits.push(subregion);
+          dispatch(setDHISHierarchy(subregion,level));
+        }
+      };
+
+        var subregions={
+                organisationUnits:organisationUnits
+              };
+
+        axios.post(url,JSON.stringify(subregions), config).then(function (res) {
+               var res=res.data;
+               dispatch(completeOrganizationCreation(res,organisationUnits,level))
+          }, function (res) {
+            throw new Error(res.data.message);
+          });
+      }
+    };
+//create 4th level , country
+//SubRegions
+export function createFourthLevel (url,level)  {
+  return function (dispatch,getState) {
+       dispatch(startOrganizationCreation());
+        var  state = getState();
+
+        var data = [],
+          organisationUnits=[],
+          promises = [];
+
+        for (let country of state.data.countires){
+        //var country=state.data.countires[0];
+          var subregion=state.dhisHierarchy.data.filter(element=> element.name===country.SubregionName);
+
+          var element={
+            "name":country.CountryName,
+            "openingDate":moment().format(),
+            "id":uid(11),
+            "shortName":country.DHS_CountryCode,
+            "parent":{"id": subregion[0].id}
+          };
+          organisationUnits.push(element);
+          dispatch(setDHISHierarchy(element,level));
+        };
+
+        var cnt={
+                organisationUnits:organisationUnits
+              };
+      axios.post(url,JSON.stringify(cnt), config).then(function (res) {
+             var data=res.data;
+            dispatch(completeOrganizationCreation(res,organisationUnits,level))
+        }, function (res) {
+          throw new Error(res.data.message);
+        });
+      }
+    };
+
 
 
 //counrty actions
@@ -266,6 +482,49 @@ export function fetchOrgs (url,level)  {
 };
 
 
+export function fetchAllOrgs (url)  {
+  return function (dispatch) {
+    dispatch(startOrgFetch());
+  var requestUrl = `${url}?paging=false`;
+  axios.get(requestUrl,config).then(function (res) {
+       var data=res.data.organisationUnits;
+       dispatch(completeOrgFetch(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
+  };
+};
+
+//fetch org based on parent id
+export var startLevelFetch = () => {
+  return {
+    type: 'START_LEVEL_FETCH'
+  };
+};
+
+export var completeLevelFetch = (data) => {
+  return {
+    type: 'COMPLETE_LEVEL_FETCH',
+    data
+  };
+};
+
+//const DHISS_
+export function fetchLevel (url,level,parent) {
+  return function (dispatch) {
+    dispatch(startLevelFetch());
+  var requestUrl = `${url}?level=${level}&filter=parent.id:eq:${parent}&paging=false`;
+  axios.get(requestUrl,config).then(function (res) {
+       var data=res.data.organisationUnits;
+       dispatch(completeLevelFetch(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
+  };
+};
+
+
+
 export var onSelectOrg = (orgs) =>{
   return {
     type:'SELECT_ORG',
@@ -333,8 +592,6 @@ export function importToDHIS (url,data)  {
       };
 
  var importdata=JSON.stringify(obj);
-
- console.log(importdata)
   axios.post(postUrl,importdata, config).then(function (res) {
        var data=res.data;
        dispatch(completeImportToDHIS(data))
@@ -343,4 +600,31 @@ export function importToDHIS (url,data)  {
   });
   };
 
+};
+
+//actiond for uid in dhis
+export var startGetIdFormDHIS = () => {
+  return {
+    type: 'START_GET_ID_DHIS'
+  };
+};
+
+export var completeGetIdFormDHIS = (data) => {
+  return {
+    type: 'COMPLETE_GET_ID_DHIS',
+    data
+  };
+};
+
+export function getIdFormDHIS (url)  {
+  return function (dispatch) {
+    dispatch(startGetIdFormDHIS());
+
+  axios.get(url, config).then(function (res) {
+       var data=res.data;
+       dispatch(completeGetIdFormDHIS(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
+  };
 };

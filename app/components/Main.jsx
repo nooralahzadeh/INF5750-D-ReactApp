@@ -67,10 +67,14 @@ export var Main= React.createClass({
   },
 
   stepShouldChange:function() {
-    var {years,step} = this.props;
-    if(step===1){
+
+    var {years,step,dhisOrg,dispatch} = this.props;
+    if((dhisOrg.level===4) && dhisOrg.res.status===200){
+
       return true;
-    }
+      }
+
+
     if (years.years.length>0) {
        return true;
      }
