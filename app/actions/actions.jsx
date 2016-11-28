@@ -628,3 +628,78 @@ export function getIdFormDHIS (url)  {
   });
   };
 };
+
+
+//indicator action
+export var startIndicatorFetch = () => {
+  return {
+    type: 'START_INDICATOR_FETCH'
+  };
+};
+
+export var completeIndicatorFetch = (data) => {
+  return {
+    type: 'COMPLETE_INDICATOR_FETCH',
+    data
+  };
+};
+
+export function fetchIndicators (url) {
+  return function (dispatch) {
+    dispatch(startIndicatorFetch());
+
+  axios.get(url).then(function (res) {
+       var data=res.data.Data;
+       dispatch(completeIndicatorFetch(data))
+  }, function (res) {
+    throw new Error(res.data.message);
+  });
+  }
+};
+
+//indicator filter action
+export var indicatorFilter = (level,data) => {
+  return {
+    type: 'INDICATOR_FILTER',
+    level,
+    data
+  };
+};
+
+//charateristic from dhs to create data elements in dhis
+
+//indicator action
+export var startCharacteriticFetch = () => {
+  return {
+    type: 'START_CHARACTERISTIC_FETCH'
+  };
+};
+
+export var completeCharacteriticFetch = (data) => {
+  return {
+    type: 'COMPLETE_CHARACTERISTIC_FETCH',
+    data
+  };
+};
+
+export function fetchCharacteritics (url) {
+  return function (dispatch) {
+    dispatch(startCharacteriticFetch());
+
+  axios.get(url).then(function (res) {
+    debugger;
+       var data=res.data.Data;
+       dispatch(completeCharacteriticFetch(data))
+  }, function (res) {
+    console.log(res);
+  });
+  }
+};
+
+//indicator filter action
+export var characteristicFilter = (data) => {
+  return {
+    type: 'CHARACTERISTIC_FILTER',
+    data
+  };
+};

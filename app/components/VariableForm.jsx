@@ -45,7 +45,7 @@ export var VariableForm=React.createClass({
    },
 
  queryBuilder:function(){
-  var{dispatch,selectedCounrty,selectedYears,indicators,breakdown}=this.props;
+  var{dispatch,selectedCounrty,selectedYears,indicators,breakdown,dhsIndicators}=this.props;
 
       if (selectedYears.length>0){
         var surveyYear= selectedYears.map(function(yr){
@@ -54,21 +54,28 @@ export var VariableForm=React.createClass({
 
       }
 
-    var inds=indicators.filter(indicator => indicator.status);
-     if(inds.length>0){
-       var indicatorIds= inds.map(function(ind){
-         return ind.id;
-         }).join(",");
-
-      }
+    //fetch indicators under each selected categories
+    var categories=indicators.filter(indicator => indicator.status);
+    if(categories.length>0){
+      var indicators=[];
+        for(let category of categories){
+          dhsIndicators.indicators.map(
+            indicator=> indicator.Level2===category.id? indicators.push(indicator.IndicatorId):''
+          );
+        }
+       if(indicators.length>0){
+         var indicatorIds= indicators.map(function(ind){
+           return ind;
+           }).join(","); }
+        }
 
       if(breakdown!==''){
         var breakdown=breakdown;
       }
-
    var requestUrl = `${DHS_DATA_API_URL}?countryIds=${selectedCounrty.shortName}&surveyYear=${surveyYear}&indicatorIds=${indicatorIds}&breakdown=${breakdown}`;
    dispatch(actions.dhsQuery(requestUrl));
    dispatch(actions.dhisGetQuery(DHIS_GET_LEVEL_URL));
+
 },
 
 
@@ -90,12 +97,15 @@ handlechange:function(e) {
 
 componentWillReceiveProps(nextProps){
 
-  var{importData,step,orgUnitsLevels,dispatch}=nextProps;
+  var{importData,step,orgUnitsLevels,dispatch,dhsCharacteristic,dhsIndicators}=nextProps;
   if (importData.data===undefined || !importData.data.Data.length>0){
         dispatch(actions.hideModal());
       } else {
         dispatch(actions.showModal());
       }
+
+
+
 
   if (orgUnitsLevels.isFetching){
             this.setState({isFetching:true});
@@ -132,7 +142,7 @@ componentWillReceiveProps(nextProps){
 
 
   render:function(){
-    var {dispatch,showModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData} = this.props;
+    var {dispatch,showModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData,dhsCharacteristic,step} = this.props;
 
     var isloading= importData.isFetching ? 'is loading...' : '';
     var isloadingOrg= dhis_orgs.isFetching ? 'is loading....' : '';
@@ -150,38 +160,48 @@ componentWillReceiveProps(nextProps){
          </option>
       );
 
+//since we create 2 set 'Child Health' and 'Child Nutrition'
+if(step===4 && dhsCharacteristic.length>1){
+    var child_health_ind=dhsCharacteristic.filter(indicator=> indicator.level==='Child Health');
+    var level2s=new Set();
+    child_health_ind[0].indicators.map(charateristic=>level2s.add(charateristic.Level2));
+    var child_health_options=[...level2s].map((item,key)=>
+    <div>
+        <input id={item} type="checkbox" onChange={this.handlechange}/><label htmlFor={item}>{item}</label>
+    </div>
+  );
+
+
+  var child_nutrition_ind=dhsCharacteristic.filter(indicator=> indicator.level==='Child Nutrition');
+  var level2s=new Set();
+  child_nutrition_ind[0].indicators.map(charateristic=>level2s.add(charateristic.Level2));
+  var child_nutrition_options=[...level2s].map((item,key)=>
+  <div>
+      <input id={item} type="checkbox" onChange={this.handlechange}/><label htmlFor={item}>{item}</label>
+  </div>
+);
+};
 
       return(
 
         <div>
         <div className="row">
-          <div className="large-7 columns">
-                <Collapsible trigger="Child health">
+          <div className="large-9 columns">
+                <Collapsible trigger="Child Health">
                   <fieldset className="fieldset">
-                    <div>
-                           <input id="CN_NUTS_C_HA2" type="checkbox" onChange={this.handlechange} />
-                              <label htmlFor="CN_NUTS_C_HA2">Children stunted</label>
-                    </div>
-                    <div>
-                        <input id="CN_NUTS_C_WH2" type="checkbox" onChange={this.handlechange}/><label htmlFor="CN_NUTS_C_WH2">Children wasted</label>
-                    </div>
-                    <div>
-                        <input id="CN_NUTS_C_WA2" type="checkbox" onChange={this.handlechange}/><label htmlFor="CN_NUTS_C_WA2">Children moderately underweight</label>
-                    </div>
-                    <div>
-                        <input id="CN_NUTS_C_WA3" type="checkbox" onChange={this.handlechange}/><label htmlFor="CN_NUTS_C_WA3">Children severely underweight	</label>
-                    </div>
-                    <div>
-                        <input id="CP_CLBS_C_SCH" type="checkbox" onChange={this.handlechange} /><label htmlFor="CP_CLBS_C_SCH">Children age 5-14 attending school	</label>
-                    </div>
+                    {child_health_options}
                   </fieldset>
                 </Collapsible>
-                <Collapsible trigger="Immunisation"/>
+                <Collapsible trigger='Child Nutrition'>
+                  <fieldset className="fieldset">
+                    {child_nutrition_options}
+                  </fieldset>
+                </Collapsible>
                 <Collapsible trigger="Maternal health"/>
                 <Collapsible trigger="Malaria"/>
 
           </div>
-            <div className="large-5 columns">
+            <div className="large-3 columns">
               <fieldset>
               <span className="form-title">Options</span>
               <div>

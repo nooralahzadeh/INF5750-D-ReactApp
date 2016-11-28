@@ -374,3 +374,70 @@ export var levelReducer = (state = {isFetching: false, orgs: []}, action) => {
       return state;
   }
 };
+
+
+
+export var indicatorReducer = (state = {isFetching: false, indicators: []}, action) => {
+  switch (action.type) {
+
+    case 'START_INDICATOR_FETCH':
+
+      return {
+        ...state,
+        isFetching: true
+      };
+    case 'COMPLETE_INDICATOR_FETCH':
+
+      return {
+        isFetching: false,
+        indicators: action.data
+      }  ;
+    default:
+      return state;
+  }
+};
+
+
+export var dhsIndicatorFilterReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'INDICATOR_FILTER':
+      return [
+        ...state,
+        {
+          level: action.level,
+          indicators:action.data
+        }
+      ];
+        default:
+          return state;
+      return state;
+  }
+};
+
+
+export var characteristicReducer = (state = {isFetching: false, characteristic: []}, action) => {
+  switch (action.type) {
+    case 'START_CHARACTERISTIC_FETCH':
+      return {
+        ...state,
+        isFetching: true
+      };
+    case 'COMPLETE_CHARACTERISTIC_FETCH':
+      return {
+        isFetching: false,
+        characteristic: action.data
+      };
+    default:
+      return state;
+  }
+};
+
+export var dhsCharacteristicFilterReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'CHARACTERISTIC_FILTER':
+      return action.data;
+        default:
+          return state;
+      return state;
+  }
+};
