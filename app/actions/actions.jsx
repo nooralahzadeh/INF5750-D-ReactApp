@@ -687,11 +687,10 @@ export function fetchCharacteritics (url) {
     dispatch(startCharacteriticFetch());
 
   axios.get(url).then(function (res) {
-    debugger;
        var data=res.data.Data;
        dispatch(completeCharacteriticFetch(data))
   }, function (res) {
-    console.log(res);
+    throw new Error(res.data.message);
   });
   }
 };
@@ -703,3 +702,152 @@ export var characteristicFilter = (data) => {
     data
   };
 };
+
+// data element creation in dhis
+export var startDataElementCreation = () => {
+  return {
+    type: 'START_DATAELEMT_CREATION'
+  };
+};
+
+
+export var completeDataElementCreation = (res,data) => {
+  return {
+    type: 'COMPLETE_DATAELEMENT_CREATION',
+    res,
+    data,
+  };
+};
+
+// pad the id to be in 11 length
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n.substr(1,width) : new Array(width - n.length + 1).join(z) + n;
+};
+
+function removeDuplicates(arr, prop) {
+     var new_arr = [];
+     var lookup  = {};
+
+     for (var i in arr) {
+         lookup[arr[i][prop]] = arr[i];
+     }
+
+     for (i in lookup) {
+         new_arr.push(lookup[i]);
+     }
+
+     return new_arr;
+ };
+
+
+export function createDataElement (url)  {
+  return function (dispatch,getState) {
+      dispatch(startDataElementCreation());
+      var  state = getState();
+      var dataElements=[];
+
+
+      var charactersitics=[];
+      for (let indicator of state.dhsDataElementsToDHIS){
+        indicator.Characteristics.map(element=>charactersitics.push(element));
+      }
+
+      var characteristicsSet=removeDuplicates(charactersitics,'CharacteristicId');
+
+      for(let element of characteristicsSet){
+
+
+        var dataElement={
+            //"id":pad(element.CharacteristicId,11),
+            "name":element.CharacteristicLabel,
+            "shortName": element.CharacteristicId.substr(0,49),
+            "valueType": "NUMBER",
+            "aggregationType": "SUM",
+            "domainType": "AGGREGATE",
+            "categoryCombo": {
+                "id": "p0KPaWEg3cf"
+              },
+      }
+        dataElements.push(dataElement)
+      }
+
+
+      var dataSetElements =
+        {
+      "dataElements": dataElements
+        };
+
+        axios.post(url,JSON.stringify(dataSetElements), config).then(function (res) {
+               var res=res.data;
+               dispatch(completeDataElementCreation(res,dataElements));
+          }, function (res) {
+            throw new Error(res.data.message);
+          });
+      }
+  };
+
+
+
+  // data element creation in dhis
+  export var startDataSetCreation = () => {
+    return {
+      type: 'START_DATASET_CREATION'
+    };
+  };
+
+
+  export var completeDataSetCreation = (res,data) => {
+    return {
+      type: 'COMPLETE_DATASET_CREATION',
+      res,
+      data,
+    };
+  };
+
+  export function createDataSet (url)  {
+    return function (dispatch,getState) {
+        dispatch(startDataSetCreation());
+        var  state = getState();
+        var dataSets=[]
+
+
+        for(let element of state.dhsDataElementsToDHIS){
+          var indicator=state.dhsIndicators.indicators.filter(ind=>ind.IndicatorId===element.indicator);
+          var dataSetElements=[];
+
+         for (let characteristic of element.Characteristics){
+               var id=state.dhisDataElements.data.filter(element=>characteristic.CharacteristicId===element.shortName)[0].id;
+               dataSetElements.push({"id": id});
+            };
+
+
+          var dataSet={
+            //  "id":pad(indicator[0].IndicatorId.split("_").join(""),11),
+              "name":indicator[0].Label,
+              "shortName":indicator[0].IndicatorId,
+              "description":indicator[0].ShortName,
+              "periodType": "Monthly",
+              "categoryCombo": {"id": "p0KPaWEg3cf"}
+              }
+
+          dataSets.push(dataSet)
+        }
+
+        debugger;
+        var datasets =
+          {
+        "dataSets": dataSets
+          };
+
+          console.log(JSON.stringify(datasets));
+
+          axios.post(url,JSON.stringify(datasets), config).then(function (res) {
+                 var res=res.data;
+                 dispatch(completeDataElementCreation(res,dataSets));
+            }, function (res) {
+              throw new Error(res.data.message);
+            });
+        }
+    };

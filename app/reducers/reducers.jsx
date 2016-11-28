@@ -441,3 +441,39 @@ export var dhsCharacteristicFilterReducer = (state = [], action) => {
       return state;
   }
 };
+
+export var dhisDataElemenReducer = (state = {inProgress: false, res:[],data:[]}, action) => {
+  switch (action.type) {
+    case 'START_DATAELEMT_CREATION':
+      return {
+        ...state,
+        inProgress: true,
+      };
+    case 'COMPLETE_DATAELEMENT_CREATION':
+      return {
+        inProgress: false,
+        res:action.res,
+        data:action.data
+      };
+    default:
+      return state;
+  }
+};
+
+export var dhisDataSetReducer = (state = {inProgress: false, res:[],data:[]}, action) => {
+  switch (action.type) {
+    case 'START_DATASET_CREATION':
+      return {
+        ...state,
+        inProgress: true,
+      };
+    case 'COMPLETE_DATASET_CREATION':
+      return {
+        inProgress: false,
+        res:action.res,
+        data:action.data
+      };
+    default:
+      return state;
+  }
+};

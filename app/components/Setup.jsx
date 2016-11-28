@@ -21,7 +21,7 @@ orgFirstHandler:function(btn){
         "name": "World",
         "openingDate": "1900-01-01T00:00:00.000",
         "shortName": "World",
-        "id":uid(11)
+        "id":"worldinf575"
       };
 //todo: check if there is no world
       dispatch(actions.createFirstLevel(DHIS_POST_URL,world,1));
@@ -73,7 +73,7 @@ orgRegionHandler:function(btn){
       }
     },
 
-    dhisDataelementHandler:function(btn){
+  dhisDataelementHandler:function(btn){
       var{dhsCharacteristic,dispatch,dhsDataElements} =this.props;
       //we will post new data elements after
 
@@ -93,12 +93,28 @@ orgRegionHandler:function(btn){
             return ind;
             }).join(",");
           }
-          var testind=indicators[0];
+
           //lets get some of them 1000
-         var requestUrl = `${DHS_DATA_API_URL}?indicatorIds=${testind}&breakdown=all&perpage=1000`;
+         var requestUrl = `${DHS_DATA_API_URL}?indicatorIds=${indicatorIds}&breakdown=all&perpage=1000`;
 
          dispatch(actions.fetchCharacteritics(requestUrl));
       }
+
+      },
+
+      dhisDataelementCreater:function(btn){
+        var{dispatch,dhsDataElementsToDHIS} =this.props;
+        if(dhsDataElementsToDHIS.length>0){
+        dispatch(actions.createDataElement(DHIS_POST_URL));
+        }
+
+      },
+
+      dhisDataSetCreater:function(btn){
+        var{dispatch,dhisDataElements} =this.props;
+        if(dhisDataElements.data.length>0){
+        dispatch(actions.createDataSet(DHIS_POST_URL));
+        }
 
       },
 
@@ -108,6 +124,21 @@ componentWillMount(){
     dispatch(actions.fetchIndicators(DHS_INDICATOR_API_URL));
 
   },
+
+ removeDuplicates(arr, prop) {
+       var new_arr = [];
+       var lookup  = {};
+
+       for (var i in arr) {
+           lookup[arr[i][prop]] = arr[i];
+       }
+
+       for (i in lookup) {
+           new_arr.push(lookup[i]);
+       }
+
+       return new_arr;
+   },
 
 componentWillReceiveProps(nextProps){
     var{dispatch,dhsCharacteristic,dhsIndicators,dhsDataElements,dhsDataElementsToDHIS}=nextProps;
@@ -147,8 +178,32 @@ componentWillReceiveProps(nextProps){
 
 
   if(dhsDataElements.characteristic.length>1 && dhsDataElementsToDHIS.length===0){
+     document.getElementById("btn_DataElements").className="sucess button";
 
-      debugger;
+     var indicatorIds=new Set();
+     dhsDataElements.characteristic.map(element=>indicatorIds.add(element.IndicatorId));
+     var dhisIndicatorsWithCharactersitcs=[];
+
+     for (let id of indicatorIds) {
+       var Characteristic=[];
+       dhsDataElements.characteristic.map(
+         element=> element.IndicatorId=== id ?  Characteristic.push({
+
+             CharacteristicId:`${element.ByVariableId}_${element.CharacteristicId}`,
+             CharacteristicLabel:`${element.ByVariableLabel}_${element.CharacteristicCategory}_${element.CharacteristicLabel}`,
+             IsPrefered:element.IsPreferred
+           }) :'' )
+          var indicator_with_Characteristic={
+               indicator:id,
+               Characteristics:[...Characteristic]
+             };
+
+       dhisIndicatorsWithCharactersitcs.push(indicator_with_Characteristic)
+    }
+
+    var characteristics=this.removeDuplicates(dhisIndicatorsWithCharactersitcs,'indicator');
+     dispatch(actions.characteristicFilter(characteristics));
+
   }
 
   },
@@ -176,7 +231,10 @@ componentWillReceiveProps(nextProps){
           <a className="disabled hollow button" href="#" onClick={this.orgRegionHandler} id="btn_region">Regions</a>
           <a className="disabled hollow button" href="#" onClick={this.orgSubRegionHandler} id="btn_sub_region">SubRegions</a>
           <a className="disabled hollow button" href="#" onClick={this.orgCountryHandler} id="btn_country">Countries</a>
-          <a className="disabled hollow button" href="#" onClick={this.dhisDataelementHandler} id="btn_DataElements">DataElements</a>
+          <a className="secondary hollow button" href="#" onClick={this.dhisDataelementHandler} id="btn_DataElements">DataElements</a>
+          <a className="secondary hollow button" href="#" onClick={this.dhisDataelementCreater} id="btn_dhisDataElements">CreateDataElement</a>
+          <a className="secondary hollow button" href="#" onClick={this.dhisDataSetCreater} id="btn_dhisDataSets">CreateDataSet</a>
+
          </div>
           <div>{message_level_1}</div>
          <div>{message_level_2}</div>
