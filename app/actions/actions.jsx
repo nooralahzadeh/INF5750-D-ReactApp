@@ -760,7 +760,7 @@ export function createDataElement (url)  {
 
 
         var dataElement={
-            //"id":pad(element.CharacteristicId,11),
+            "id":pad(element.CharacteristicId,11),
             "name":element.CharacteristicLabel,
             "shortName": element.CharacteristicId.substr(0,49),
             "valueType": "NUMBER",
@@ -824,7 +824,7 @@ export function createDataElement (url)  {
 
 
           var dataSet={
-            //  "id":pad(indicator[0].IndicatorId.split("_").join(""),11),
+              "id":pad(indicator[0].IndicatorId.split("_").join(""),11),
               "name":indicator[0].Label,
               "shortName":indicator[0].IndicatorId,
               "description":indicator[0].ShortName,
