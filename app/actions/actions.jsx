@@ -40,6 +40,20 @@ export function createFirstLevel (url,data,level)  {
   return function (dispatch) {
       dispatch(startOrganizationCreation());
       var obj = {
+      organisationUnitLevels: [{
+          "name": "World",
+          "level": 1,
+          "offlineLevels": 3
+          }, {
+          "name": "Region",
+          "level": 2
+          }, {
+          "name": "Sub Region",
+          "level": 3
+          }, {
+          "name": "Country",
+          "level": 4
+          }],
   	  organisationUnits: [data]
         };
 
@@ -92,7 +106,7 @@ export function createSecondLevel (url,level)  {
                   "name":element.RegionName,
                   "openingDate":moment().format(),
                   "shortName":element.RegionName,
-                  "code":element.RegionName,
+                  "code":`${element.RegionName}-${level}`,
                   "id":uid(11),
                   "description":"dhs",
                   "parent":{"id": state.dhisOrg.data.id}
@@ -214,7 +228,7 @@ export function createThirdLevel (url,level)  {
                   "id":uid(11),
                   "shortName":element,
                   "description":"dhs",
-                  "code":element,
+                  "code":`${element}-${level}`,
                   "parent":{"id": region.RegionCode}
                 };
           organisationUnits.push(subregion);

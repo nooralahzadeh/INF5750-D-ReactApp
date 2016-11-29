@@ -3,16 +3,16 @@ var ReactDom = require('react-dom');
 var uid= require('uid');
 var {connect} = require('react-redux');
 var actions = require('actions');
-
-const DHIS_POST_URL='https://play.dhis2.org/test/api/metadata';
-const DHIS_ID_API_URL='https://play.dhis2.org/test/api/system/id.json';
+const dhis='http://localhost:8082';
+const DHIS_POST_URL=`${dhis}/api/metadata`;
+const DHIS_ID_API_URL=`${dhis}/api/system/id`;
 const DHS_COUNTRY_API_URL='http://api.dhsprogram.com/rest/dhs/countries';
-const DHIS_API_URL='https://play.dhis2.org/test/api/organisationUnits.json';
+const DHIS_API_URL=`${dhis}/api/organisationUnits.json`;
 const DHS_INDICATOR_API_URL='http://api.dhsprogram.com/rest/dhs/indicators';
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
-const DHIS_POST_DATASETELEMENT_URL='https://play.dhis2.org/test/api/dataSetElements';
-const DHIS_DATASET_API_URL='https://play.dhis2.org/test/api/dataSets?pageSize=1000&fields=shortName,code,id';
-const DHIS_DATAELEMNT_API_URL='https://play.dhis2.org/test/api/dataElements?pageSize=2000&fields=name,shortName,code,id';
+const DHIS_POST_DATASETELEMENT_URL=`${dhis}/api/dataSetElements`;
+const DHIS_DATASET_API_URL=`${dhis}/api/dataSets?pageSize=1000&fields=shortName,code,id,description&filter=description:eq:dhs`;
+const DHIS_DATAELEMNT_API_URL=`${dhis}/api/dataElements?pageSize=2000&fields=name,shortName,code,id,description&filter=description:eq:dhs`;
 
 export var Setup=React.createClass({
 
@@ -20,6 +20,7 @@ export var Setup=React.createClass({
 orgFirstHandler:function(btn){
 
     var{dispatch}=this.props;
+    
     var world={
         "name": "World",
         "openingDate": "1900-01-01T00:00:00.000",
@@ -128,8 +129,9 @@ componentWillMount(){
     var{dispatch}=this.props;
     dispatch(actions.fetchCountires(DHS_COUNTRY_API_URL));
     dispatch(actions.fetchIndicators(DHS_INDICATOR_API_URL));
-      dispatch(actions.fetchDataSets(DHIS_DATASET_API_URL));
-        dispatch(actions.fetchDataElements(DHIS_DATAELEMNT_API_URL));
+
+    dispatch(actions.fetchDataSets(DHIS_DATASET_API_URL));
+    dispatch(actions.fetchDataElements(DHIS_DATAELEMNT_API_URL));
 
   },
 

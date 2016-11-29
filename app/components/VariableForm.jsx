@@ -32,11 +32,11 @@ const customStyles = {
     }
   };
 
-
+const dhis='http://localhost:8082/';
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
-const DHIS_GET_LEVEL_URL='https://play.dhis2.org/test/api/filledOrganisationUnitLevels';
-const DHIS_POST_URL='https://play.dhis2.org/test/api/metadata';
-const DHIS_POST_DATAVALUES_URL='https://play.dhis2.org/test/api/dataValueSets?orgUnitIdScheme=name';
+const DHIS_GET_LEVEL_URL=`${dhis}/api/filledOrganisationUnitLevels`;
+const DHIS_POST_URL=`${dhis}/api/metadata`;
+const DHIS_POST_DATAVALUES_URL=`${dhis}/api/dataValueSets?orgUnitIdScheme=name`;
 export var VariableForm=React.createClass({
 
   getInitialState: function() {
