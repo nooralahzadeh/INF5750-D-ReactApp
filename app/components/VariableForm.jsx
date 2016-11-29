@@ -36,6 +36,7 @@ const customStyles = {
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
 const DHIS_GET_LEVEL_URL='https://play.dhis2.org/test/api/filledOrganisationUnitLevels';
 const DHIS_POST_URL='https://play.dhis2.org/test/api/metadata';
+const DHIS_POST_DATAVALUES_URL='https://play.dhis2.org/test/api/dataValueSets?orgUnitIdScheme=name';
 export var VariableForm=React.createClass({
 
   getInitialState: function() {
@@ -120,7 +121,7 @@ componentWillReceiveProps(nextProps){
 
  importToDHIS:function(){
    var{dispatch,selectedCounrty}=this.props;
-   dispatch(actions.importToDHIS(DHIS_POST_URL,selectedCounrty));
+   dispatch(actions.importToDHIS(DHIS_POST_DATAVALUES_URL,selectedCounrty));
    dispatch(actions.hideModal());
    dispatch(actions.emptyImportData());
 
@@ -305,6 +306,17 @@ if(step===4 && dhsCharacteristic.length>1){
                       <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
                   </div>
               </div>
+              </Modal>
+
+              <Modal
+                    isOpen={false}
+                    onAfterOpen={this.afterOpenModal2}
+                    onRequestClose={this.closeModal2}
+                    style={customStyles}
+                    shouldCloseOnOverlayClick={false}
+                    contentLabel="Import..."
+                >
+                <p>How many data importedt!</p>
               </Modal>
           </div>
     </div>

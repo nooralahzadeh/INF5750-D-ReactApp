@@ -92,7 +92,9 @@ export function createSecondLevel (url,level)  {
                   "name":element.RegionName,
                   "openingDate":moment().format(),
                   "shortName":element.RegionName,
+                  "code":element.RegionName,
                   "id":uid(11),
+                  "description":"dhs",
                   "parent":{"id": state.dhisOrg.data.id}
                 };
           organisationUnits.push(region);
@@ -211,6 +213,8 @@ export function createThirdLevel (url,level)  {
                   "openingDate":moment().format(),
                   "id":uid(11),
                   "shortName":element,
+                  "description":"dhs",
+                  "code":element,
                   "parent":{"id": region.RegionCode}
                 };
           organisationUnits.push(subregion);
@@ -250,6 +254,8 @@ export function createFourthLevel (url,level)  {
             "openingDate":moment().format(),
             "id":uid(11),
             "shortName":country.DHS_CountryCode,
+            "code":country.DHS_CountryCode,
+            "description":"dhs",
             "parent":{"id": subregion[0].id}
           };
           organisationUnits.push(element);
@@ -482,6 +488,7 @@ export function fetchOrgs (url,level)  {
 };
 
 
+
 export function fetchAllOrgs (url)  {
   return function (dispatch) {
     dispatch(startOrgFetch());
@@ -584,22 +591,48 @@ export var completeImportToDHIS = (data) => {
 };
 
 export function importToDHIS (url,data)  {
-  return function (dispatch) {
+  return function (dispatch,getState) {
     dispatch(startImportToDHIS());
-   var postUrl = `${url}`;
-  var obj = {
-	  organisationUnits: [data]
+    var  state = getState();
+    var dataToImport=[];
+
+    for ( let data of state.importData.data.Data){
+
+      var dataSetId=state.availableDataSets.datasets.filter(element=>element.shortName===data.IndicatorId)[0].id;
+      var dataElementId=`${data.ByVariableId}_${data.CharacteristicId}`;
+
+      var dataElelemtExist=state.availableDataElements.dataElements.filter(element=>element.shortName===dataElementId);
+
+      if(dataElelemtExist.length>0 && data.Value!==0){
+        console.log(dataElelemtExist);
+      var dataValue=
+          {
+          "dataSet.id":dataSetId,
+           "dataElement": dataElelemtExist[0].id,
+           "period": `${data.SurveyYearLabel}`.split("-").join(""),
+           "orgUnit":data.CountryName,
+           "value": data.Value
+         };
+
+    dataToImport.push(dataValue);
+    }
+
+    }
+
+         var dataValues={
+           "dataValues":dataToImport
+         };
+
+
+
+         debugger;
+      axios.post(url,JSON.stringify(dataValues), config).then(function (res) {
+           var data=res.data;
+           dispatch(completeImportToDHIS(data))
+      }, function (res) {
+        throw new Error(res.data.message);
+      });
       };
-
- var importdata=JSON.stringify(obj);
-  axios.post(postUrl,importdata, config).then(function (res) {
-       var data=res.data;
-       dispatch(completeImportToDHIS(data))
-  }, function (res) {
-    throw new Error(res.data.message);
-  });
-  };
-
 };
 
 //actiond for uid in dhis
@@ -763,6 +796,8 @@ export function createDataElement (url)  {
             "id":pad(element.CharacteristicId,11),
             "name":element.CharacteristicLabel,
             "shortName": element.CharacteristicId.substr(0,49),
+            "code": element.CharacteristicId.substr(0,49),
+            "description":"dhs",
             "valueType": "NUMBER",
             "aggregationType": "SUM",
             "domainType": "AGGREGATE",
@@ -790,7 +825,7 @@ export function createDataElement (url)  {
 
 
 
-  // data element creation in dhis
+  // data set creation in dhis
   export var startDataSetCreation = () => {
     return {
       type: 'START_DATASET_CREATION'
@@ -815,19 +850,20 @@ export function createDataElement (url)  {
 
         for(let element of state.dhsDataElementsToDHIS){
           var indicator=state.dhsIndicators.indicators.filter(ind=>ind.IndicatorId===element.indicator);
-          var dataSetElements=[];
+        //  var dataSetElements=[];
 
-         for (let characteristic of element.Characteristics){
-               var id=state.dhisDataElements.data.filter(element=>characteristic.CharacteristicId===element.shortName)[0].id;
-               dataSetElements.push({"id": id});
-            };
+        //  for (let characteristic of element.Characteristics){
+        //        var id=state.dhisDataElements.data.filter(element=>characteristic.CharacteristicId===element.shortName)[0].id;
+        //        dataSetElements.push({"id": id});
+        //     };
 
 
           var dataSet={
               "id":pad(indicator[0].IndicatorId.split("_").join(""),11),
               "name":indicator[0].Label,
               "shortName":indicator[0].IndicatorId,
-              "description":indicator[0].ShortName,
+              "code":indicator[0].IndicatorId,
+              "description":'dhs',
               "periodType": "Monthly",
               "categoryCombo": {"id": "p0KPaWEg3cf"}
               }
@@ -835,19 +871,134 @@ export function createDataElement (url)  {
           dataSets.push(dataSet)
         }
 
-        debugger;
         var datasets =
           {
         "dataSets": dataSets
           };
 
-          console.log(JSON.stringify(datasets));
-
-          axios.post(url,JSON.stringify(datasets), config).then(function (res) {
+        axios.post(url,JSON.stringify(datasets), config).then(function (res) {
                  var res=res.data;
-                 dispatch(completeDataElementCreation(res,dataSets));
+                 dispatch(completeDataSetCreation(res,dataSets));
             }, function (res) {
               throw new Error(res.data.message);
             });
         }
     };
+
+
+// data set elemets creation in dhis
+    export var startDataSetElemntCreation = () => {
+      return {
+        type: 'START_DATASET_ELEMENT_CREATION'
+      };
+    };
+
+
+    export var completeDataSetElemntCreation = (data) => {
+      return {
+        type: 'COMPLETE_DATASET_ELEMENT_CREATION',
+        //res,
+        data,
+      };
+    };
+
+    export function createDataSetElements (url)  {
+      return function (dispatch,getState) {
+          dispatch(startDataSetElemntCreation());
+          var  state = getState();
+
+          var data=[];
+          var promises=[];
+          for(let dataset of state.dhisDataSets.data){
+            var dataElements=state.dhsDataElementsToDHIS.filter(member=>member.indicator===dataset.shortName)[0].Characteristics;
+
+            for(let dataElement of dataElements){
+              var dElement= state.dhisDataElements.data.filter(member=>dataElement.CharacteristicId===member.shortName)[0].id;
+
+              var dataSetElement={
+                    "dataElement": {
+                    "id": dElement
+                    }, "dataSet": {
+                    "id": dataset.id
+                    }
+                  }
+                  // {"dataSetElements":[
+                  //       {
+                  //       "dataElement": {"id": "BNSioHavbqs"},
+                  //       "dataSet": {"id": "XgynGH8ofhF"}
+                  //       },
+                  //       {
+                  //       "dataElement": {"id": "i1i6Aqd40bM"},
+                  //       "dataSet": {"id": "XgynGH8ofhF"}
+                  //       }
+                  //   ]}
+
+                data.push(dataSetElement);
+                axios.post(url,JSON.stringify(dataSetElement), config).then(function (res) {
+                        var res=res.data.response.uid;
+                    }, function (res) {
+                      throw new Error(res.data.message);
+                    });
+
+            }
+
+          }
+          dispatch(completeDataSetElemntCreation(data));
+
+          }
+      };
+
+
+  //Fetch dataSets from DHIS:
+  export var startDataSetFetch = () => {
+    return {
+      type: 'START_DATASET_FETCH'
+    };
+  };
+
+  export var completeDataSetFetch = (data) => {
+    return {
+      type: 'COMPLETE_DATASET_FETCH',
+      data
+    };
+  };
+
+  //const DHISS_
+  export function fetchDataSets (url)  {
+    return function (dispatch) {
+      dispatch(startDataSetFetch());
+    axios.get(url,config).then(function (res) {
+         var data=res.data.dataSets;
+         dispatch(completeDataSetFetch(data))
+    }, function (res) {
+      throw new Error(res.data.message);
+    });
+    };
+  };
+
+  //Fetch dataElement from DHIS:
+  export var startDataElementFetch = () => {
+    return {
+      type: 'START_DATAELEMENT_FETCH'
+    };
+  };
+
+  export var completeDataElementFetch = (data) => {
+    return {
+      type: 'COMPLETE_DATAELEMENT_FETCH',
+      data
+    };
+  };
+
+  //const DHISS_
+  export function fetchDataElements (url)  {
+    return function (dispatch) {
+      dispatch(startDataElementFetch());
+    axios.get(url,config).then(function (res) {
+         var data=res.data.dataElements;
+         dispatch(completeDataElementFetch(data))
+    }, function (res) {
+      throw new Error(res.data.message);
+    });
+    };
+  };

@@ -1,7 +1,7 @@
 var redux = require('redux');
 import Thunk from 'redux-thunk';
 import { syncHistoryWithStore, routerReducer} from 'react-router-redux';
-var {setUpReducer,DHISHierarchyReducer,dhisDataSetReducer,dhisDataElemenReducer,dhsCharacteristicFilterReducer,countryReducer,orgReducer,indicatorReducer,dhsIndicatorFilterReducer,characteristicReducer, yearReducer,selectCounrtyReducer,yearSelectReducer,stepChangeReducer,variablesReducer,optionReducer,importDHSReducer,dhsQueryBuilderReducer,getDHISReducer,selectOrgLevelReducer,orgSelectReducer,showModalReducer,importDHISReducer} = require('reducers');
+var {setUpReducer,DHISHierarchyReducer,dataEelemntReducer,dataSetReducer,dhisDataSetMemberReducer,dhisDataSetReducer,dhisDataElemenReducer,dhsCharacteristicFilterReducer,countryReducer,orgReducer,indicatorReducer,dhsIndicatorFilterReducer,characteristicReducer, yearReducer,selectCounrtyReducer,yearSelectReducer,stepChangeReducer,variablesReducer,optionReducer,importDHSReducer,dhsQueryBuilderReducer,getDHISReducer,selectOrgLevelReducer,orgSelectReducer,showModalReducer,importDHISReducer} = require('reducers');
 
 export var configure = (initialState = {}) => {
   // Add the reducer to your store on the `routing` key
@@ -15,6 +15,7 @@ export var configure = (initialState = {}) => {
     dhsDataElementsToDHIS:dhsCharacteristicFilterReducer,
     dhisDataElements:dhisDataElemenReducer,
     dhisDataSets:dhisDataSetReducer,
+    dhisDataSetsElements:dhisDataSetMemberReducer,
     years:yearReducer,
     selectedCounrty: selectCounrtyReducer,
     selectedYears:yearSelectReducer,
@@ -25,6 +26,8 @@ export var configure = (initialState = {}) => {
     importData:importDHSReducer,
     orgUnitsLevels:getDHISReducer,
     selectOrgLevel:selectOrgLevelReducer,
+    availableDataSets:dataSetReducer,
+    availableDataElements:dataEelemntReducer,
     dhis_orgs:orgReducer,
 
     //levels:levelReducer,

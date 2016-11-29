@@ -460,7 +460,7 @@ export var dhisDataElemenReducer = (state = {inProgress: false, res:[],data:[]},
   }
 };
 
-export var dhisDataSetReducer = (state = {inProgress: false, res:[],data:[]}, action) => {
+export var dhisDataSetReducer = (state = {inProgress: false,res:[], data:[]}, action) => {
   switch (action.type) {
     case 'START_DATASET_CREATION':
       return {
@@ -473,6 +473,65 @@ export var dhisDataSetReducer = (state = {inProgress: false, res:[],data:[]}, ac
         res:action.res,
         data:action.data
       };
+    default:
+      return state;
+  }
+};
+
+
+export var dhisDataSetMemberReducer = (state = {inProgress: false, data:[]}, action) => {
+  switch (action.type) {
+    case 'START_DATASET_ELEMENT_CREATION':
+      return {
+        ...state,
+        inProgress: true,
+      };
+    case 'COMPLETE_DATASET_ELEMENT_CREATION':
+      return {
+        inProgress: false,
+      //  res:action.res,
+        data:action.data
+      };
+    default:
+      return state;
+  }
+};
+
+
+
+export var dataSetReducer = (state = {isFetching: false, datasets: []}, action) => {
+  switch (action.type) {
+    case 'START_DATASET_FETCH':
+      return {
+        ...state,
+        isFetching: true,
+
+      };
+    case 'COMPLETE_DATASET_FETCH':
+      return {
+        isFetching: false,
+        datasets: action.data
+      }  ;
+
+    default:
+      return state;
+  }
+};
+
+export var dataEelemntReducer = (state = {isFetching: false, dataElements: []}, action) => {
+  switch (action.type) {
+    case 'START_DATAELEMENT_FETCH':
+      return {
+        ...state,
+        isFetching: true,
+
+      };
+    case 'COMPLETE_DATAELEMENT_FETCH':
+      return {
+        isFetching: false,
+        dataElements: action.data
+      }  ;
+
     default:
       return state;
   }

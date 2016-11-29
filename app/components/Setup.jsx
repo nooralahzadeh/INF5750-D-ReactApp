@@ -10,6 +10,9 @@ const DHS_COUNTRY_API_URL='http://api.dhsprogram.com/rest/dhs/countries';
 const DHIS_API_URL='https://play.dhis2.org/test/api/organisationUnits.json';
 const DHS_INDICATOR_API_URL='http://api.dhsprogram.com/rest/dhs/indicators';
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
+const DHIS_POST_DATASETELEMENT_URL='https://play.dhis2.org/test/api/dataSetElements';
+const DHIS_DATASET_API_URL='https://play.dhis2.org/test/api/dataSets?pageSize=1000&fields=shortName,code,id';
+const DHIS_DATAELEMNT_API_URL='https://play.dhis2.org/test/api/dataElements?pageSize=2000&fields=name,shortName,code,id';
 
 export var Setup=React.createClass({
 
@@ -21,6 +24,7 @@ orgFirstHandler:function(btn){
         "name": "World",
         "openingDate": "1900-01-01T00:00:00.000",
         "shortName": "World",
+        "description":"dhs",
         "id":"worldinf575"
       };
 //todo: check if there is no world
@@ -102,18 +106,20 @@ orgRegionHandler:function(btn){
 
       },
 
-      dhisDataelementCreater:function(btn){
+      dhisDataElement_DataSetCreater:function(btn){
         var{dispatch,dhsDataElementsToDHIS} =this.props;
         if(dhsDataElementsToDHIS.length>0){
         dispatch(actions.createDataElement(DHIS_POST_URL));
+        dispatch(actions.createDataSet(DHIS_POST_URL));
         }
 
       },
 
-      dhisDataSetCreater:function(btn){
-        var{dispatch,dhisDataElements} =this.props;
-        if(dhisDataElements.data.length>0){
-        dispatch(actions.createDataSet(DHIS_POST_URL));
+
+      dhisDataSetToDataElement:function(btn){
+        var{dispatch,dhisDataSets} =this.props;
+        if(dhisDataSets.data.length>0){
+        dispatch(actions.createDataSetElements(DHIS_POST_DATASETELEMENT_URL));
         }
 
       },
@@ -122,6 +128,8 @@ componentWillMount(){
     var{dispatch}=this.props;
     dispatch(actions.fetchCountires(DHS_COUNTRY_API_URL));
     dispatch(actions.fetchIndicators(DHS_INDICATOR_API_URL));
+      dispatch(actions.fetchDataSets(DHIS_DATASET_API_URL));
+        dispatch(actions.fetchDataElements(DHIS_DATAELEMNT_API_URL));
 
   },
 
@@ -232,8 +240,8 @@ componentWillReceiveProps(nextProps){
           <a className="disabled hollow button" href="#" onClick={this.orgSubRegionHandler} id="btn_sub_region">SubRegions</a>
           <a className="disabled hollow button" href="#" onClick={this.orgCountryHandler} id="btn_country">Countries</a>
           <a className="secondary hollow button" href="#" onClick={this.dhisDataelementHandler} id="btn_DataElements">DataElements</a>
-          <a className="secondary hollow button" href="#" onClick={this.dhisDataelementCreater} id="btn_dhisDataElements">CreateDataElement</a>
-          <a className="secondary hollow button" href="#" onClick={this.dhisDataSetCreater} id="btn_dhisDataSets">CreateDataSet</a>
+          <a className="secondary hollow button" href="#" onClick={this.dhisDataElement_DataSetCreater} id="btn_dhisDataElements">DataSets</a>
+          <a className="secondary hollow button" href="#" onClick={this.dhisDataSetToDataElement} id="btn_dhisDataSetsToDataElement">CreateDataSetElements</a>
 
          </div>
           <div>{message_level_1}</div>
