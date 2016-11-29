@@ -27,6 +27,7 @@
     "react-router-redux": "^4.0.7",
     "react-wizard": "^0.3.4",
     "redux-thunk": "^2.1.0",
+    "uid": "0.0.2",
     "uuid": "^3.0.0"
   },
   "devDependencies": {
