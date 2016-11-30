@@ -873,12 +873,14 @@ export function createDataElement (url)  {
       }
 
 
-      var dataSetElements =
+
+
+      var data_elements =
         {
       "dataElements": dataElements
         };
 
-        axios.post(url,JSON.stringify(dataSetElements), config).then(function (res) {
+        axios.post(url,JSON.stringify(data_elements), config).then(function (res) {
                var res=res.data;
                dispatch(completeDataElementCreation(res,dataElements));
           }, function (res) {
@@ -986,28 +988,21 @@ export function createDataElement (url)  {
                     "id": dataset.id
                     }
                   }
-                  // {"dataSetElements":[
-                  //       {
-                  //       "dataElement": {"id": "BNSioHavbqs"},
-                  //       "dataSet": {"id": "XgynGH8ofhF"}
-                  //       },
-                  //       {
-                  //       "dataElement": {"id": "i1i6Aqd40bM"},
-                  //       "dataSet": {"id": "XgynGH8ofhF"}
-                  //       }
-                  //   ]}
+              data.push(dataSetElement);
+              }
+          }
 
-                data.push(dataSetElement);
-                axios.post(url,JSON.stringify(dataSetElement), config).then(function (res) {
-                        var res=res.data.response.uid;
+              var dataSetElements={
+                  "dataSetElements":data
+                }
+
+              axios.post(url,JSON.stringify(dataSetElements), config).then(function (res) {
+                        dispatch(completeDataSetElemntCreation(dataSetElements));
                     }, function (res) {
-                      throw new Error(res.data.message);
+                      console.log(res)
                     });
 
-            }
 
-          }
-          dispatch(completeDataSetElemntCreation(data));
 
           }
       };

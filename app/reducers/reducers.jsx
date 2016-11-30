@@ -75,7 +75,7 @@ export var yearReducer = (state = {isFetching: false, country:'', years: []}, ac
   }
 };
 
-export var selectCounrtyReducer = (state={}, action) => {
+export var selectCounrtyReducer = (state={shortname:undefined,openingDate:undefined,name:undefined}, action) => {
   switch (action.type) {
     case 'SELECT_COUNRTY':
       return {

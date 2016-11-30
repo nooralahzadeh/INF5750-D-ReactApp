@@ -35,7 +35,7 @@ const customStyleFirst = {
   const customStyleSecond = {
       content : {
       position                   : 'absolute',
-      top                        : '200px',
+      top                        : '100px',
       left                       : '400px',
       right                      : '400px',
       bottom                     : '200px',
@@ -189,7 +189,8 @@ componentWillReceiveProps(nextProps){
 
 
   render:function(){
-    var {dispatch,showFirstModal,showSecondModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData,dhsCharacteristic,step,importedData} = this.props;
+    var {dispatch,showFirstModal,showSecondModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData,dhsCharacteristic,step,importedData,
+    selectedCounrty,selectedYears} = this.props;
 
     var isloading= importData.isFetching ? 'is loading...' : (((importData.data  instanceof Object)  && (importData.data.status===404 || importData.data.status===500)) ? <span className="error">{importData.data.statusText}: No response from dhs! Please select proper varibale</span> :'')  ;
     var isloadingOrg= dhis_orgs.isFetching ? 'is loading....' : '';
@@ -210,6 +211,12 @@ componentWillReceiveProps(nextProps){
       if(importedData.isImporting && importedData.data.length===0){
           var info = <p> is importing .....</p>
         } else if(!importedData.isImporting && importedData.data instanceof Object) {
+          var counrty= <p>Selected country: {selectedCounrty.name}</p>
+
+          var selctedYears=selectedYears.map(function(yr){
+            return yr.id;
+            }).join(",");
+          var years=<p> Selected years: {selctedYears}</p>
           var info= <ul>
                           <li>Successfully Imported dataVaules: {importedData.data.importCount.imported}</li>
                           <li>Successfully Updated dataVaules: {importedData.data.importCount.updated}</li>
@@ -291,10 +298,7 @@ if(step===4 && dhsCharacteristic.length>1){
             </p>
           </div>
           <div>{isloading}</div>
-
           <div>
-
-
             <Modal
                   isOpen={showFirstModal}
                   onAfterOpen={this.afterOpenFirstModal}
@@ -372,7 +376,11 @@ if(step===4 && dhsCharacteristic.length>1){
                     contentLabel="Import..."
                 >
                 <div>
-                  <p>Import result</p>
+                  <p>Import result:</p>
+                  <div>
+                    {counrty}
+                    {years}
+                  </div>
                   <div className="callout success">
                     <div>{info}</div>
                   </div>

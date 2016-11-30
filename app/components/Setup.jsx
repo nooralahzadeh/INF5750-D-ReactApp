@@ -118,7 +118,7 @@ orgRegionHandler:function(btn){
       dhisDataSetToDataElement:function(btn){
         var{dispatch,dhisDataSets} =this.props;
         if(dhisDataSets.data.length>0){
-        dispatch(actions.createDataSetElements(DHIS_POST_DATASETELEMENT_URL));
+        dispatch(actions.createDataSetElements(DHIS_POST_URL));
         }
 
       },
@@ -154,7 +154,7 @@ componentWillReceiveProps(nextProps){
       dispatch(actions.indicatorFilter('Child Nutrition',indictors));
     };
 
-    
+
     // //here it doesnt work in componentWillReceiveProps
     // if(dhsCharacteristic.length>1 && dhsDataElements.characteristic.length===0){
     //   var indicators=[];

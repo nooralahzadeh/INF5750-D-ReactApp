@@ -11,16 +11,19 @@ export var CountryForm=React.createClass({
    },
 componentWillReceiveProps(nextProps){
 
-  var{years}=nextProps;
-  //var message_no_year= years.year.length>0 ?'':<span className="error"> Selected country doesn't have year!</span>
-
+  var{years,selectedCounrty}=nextProps;
+  if(years.years.length===0 && selectedCounrty.shortName!==undefined){
+      this.setState({message_no_year: <span className="error"> Selected country doesn't have year!</span>});
+    } else {
+        this.setState({message_no_year:''});
+    }
     },
 
 
 createCountires(subRegions,dhisOrg){
     var{dispatch}=this.props;
     if(dhisOrg.level===3 && subRegions.data!==undefined ){
-      debugger;
+
       const DHIS_POST_URL='https://play.dhis2.org/test/api/metadata';
       dispatch(actions.createFourthLevel(DHIS_POST_URL,4));
         }
@@ -53,19 +56,21 @@ createCountires(subRegions,dhisOrg){
               dispatch(actions.onSelectCountry(selectCountryCode,selectCountryName));
               var DHS_SURVEY_API_URL='http://api.dhsprogram.com/rest/dhs/v4/surveys';
               dispatch(actions.fetchYear(DHS_SURVEY_API_URL,selectCountryCode));
-              debugger;
+
               if(selectedYears.length>0){
                 dispatch(actions.onBackWard());
-              } else{
-                this.setState({message_no_year:<span className="error"> Selected country doesn't have year!</span>}) ;
 
-              }
+              };
+
+
             }}>
           {defaultOption}
           {options}
             </select>
-              <div>{this.message_no_year}</div>
             <div>{message}</div>
+            <div>
+              {this.state.message_no_year}
+            </div>
             </div>
         );
         }
