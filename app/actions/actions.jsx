@@ -637,7 +637,7 @@ export function importToDHIS (url,data)  {
     var  state = getState();
     var dataToImport=[];
 
-    for ( let data of state.importData.data.Data){
+    for ( let data of state.importData.data){
 
       var dataSetId=state.availableDataSets.datasets.filter(element=>element.shortName===data.IndicatorId);
       var dataElementId=`${data.ByVariableId}_${data.CharacteristicId}`;

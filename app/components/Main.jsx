@@ -71,10 +71,11 @@ export var Main= React.createClass({
   stepShouldChange:function() {
 
     var {years,step,dhisOrg,dispatch,availableDataElements,availableDataSets} = this.props;
-    
+    if(step===1){
+      return true;
+    }
     dispatch(actions.emptyImportData());
     dispatch(actions.emptyImportedData());
-    return true;
     if((dhisOrg.level===4) && dhisOrg.res.status===200){
       return true;
       }
