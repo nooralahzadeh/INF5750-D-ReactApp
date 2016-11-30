@@ -572,21 +572,39 @@ export var onCancelModalorgs = () => {
   };
 };
 
-export var showModal = () => {
+export var showFirstModal = () => {
   return {
-    type:'SHOW_MODAL'
+    type:'SHOW_FIRST_MODAL'
   };
 };
 
-export var hideModal = () => {
+export var showSecondModal = () => {
   return {
-    type:'HIDE_MODAL'
+    type:'SHOW_SECOND_MODAL'
   };
 };
+
+export var hideFirstModal = () => {
+  return {
+    type:'HIDE_FIRST_MODAL'
+  };
+};
+export var hideSecondModal = () => {
+  return {
+    type:'HIDE_SECOND_MODAL'
+  };
+};
+
 
 export var emptyImportData = () => {
   return {
     type:'EMPTY_IMPORT_DATA'
+  };
+};
+
+export var emptyImportedData = () => {
+  return {
+    type:'EMPTY_IMPORTED_DATA'
   };
 };
 
@@ -612,18 +630,30 @@ export function importToDHIS (url,data)  {
 
     for ( let data of state.importData.data.Data){
 
-      var dataSetId=state.availableDataSets.datasets.filter(element=>element.shortName===data.IndicatorId)[0].id;
+      var dataSetId=state.availableDataSets.datasets.filter(element=>element.shortName===data.IndicatorId);
       var dataElementId=`${data.ByVariableId}_${data.CharacteristicId}`;
 
       var dataElelemtExist=state.availableDataElements.dataElements.filter(element=>element.shortName===dataElementId);
 
-      if(dataElelemtExist.length>0 && data.Value!==0){
-        console.log(dataElelemtExist);
+      if(dataElelemtExist.length>0 && dataSetId.length>0 && data.Value!==0){
+
+    var period = data.SurveyYearLabel.split("-");
+    var second=parseInt(period[1], 10);
+          if (second >12 || second <1 ){
+          	  period=period[0]+'01'
+            }
+         else if(second<10){
+           period=period[0]+"0"+second
+        }
+        else {
+          period=period[0]+second
+        }
+
       var dataValue=
           {
-          "dataSet.id":dataSetId,
+          "dataSet.id":dataSetId[0].id,
            "dataElement": dataElelemtExist[0].id,
-           "period": `${data.SurveyYearLabel}`.split("-").join(""),
+           "period": period,
            "orgUnit":data.CountryName,
            "value": data.Value
          };
@@ -638,8 +668,9 @@ export function importToDHIS (url,data)  {
          };
 
 
+     console.log(JSON.stringify(dataValues));
+     debugger;
 
-         debugger;
       axios.post(url,JSON.stringify(dataValues), config).then(function (res) {
            var data=res.data;
            dispatch(completeImportToDHIS(data))

@@ -11,8 +11,6 @@ const DHIS_API_URL=`${dhis}/api/organisationUnits.json`;
 const DHS_INDICATOR_API_URL='http://api.dhsprogram.com/rest/dhs/indicators';
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
 const DHIS_POST_DATASETELEMENT_URL=`${dhis}/api/dataSetElements`;
-const DHIS_DATASET_API_URL=`${dhis}/api/dataSets?pageSize=1000&fields=shortName,code,id,description&filter=description:eq:dhs`;
-const DHIS_DATAELEMNT_API_URL=`${dhis}/api/dataElements?pageSize=2000&fields=name,shortName,code,id,description&filter=description:eq:dhs`;
 
 export var Setup=React.createClass({
 
@@ -20,7 +18,7 @@ export var Setup=React.createClass({
 orgFirstHandler:function(btn){
 
     var{dispatch}=this.props;
-    
+
     var world={
         "name": "World",
         "openingDate": "1900-01-01T00:00:00.000",
@@ -129,10 +127,6 @@ componentWillMount(){
     var{dispatch}=this.props;
     dispatch(actions.fetchCountires(DHS_COUNTRY_API_URL));
     dispatch(actions.fetchIndicators(DHS_INDICATOR_API_URL));
-
-    dispatch(actions.fetchDataSets(DHIS_DATASET_API_URL));
-    dispatch(actions.fetchDataElements(DHIS_DATAELEMNT_API_URL));
-
   },
 
  removeDuplicates(arr, prop) {
@@ -151,7 +145,7 @@ componentWillMount(){
    },
 
 componentWillReceiveProps(nextProps){
-    var{dispatch,dhsCharacteristic,dhsIndicators,dhsDataElements,dhsDataElementsToDHIS}=nextProps;
+    var{dispatch,dhsCharacteristic,dhsIndicators,dhsDataElements,dhsDataElementsToDHIS,availableDataElements,availableDataSets}=nextProps;
   //Here we just keep 2 level indicators
   if(dhsIndicators.indicators.length>0 && dhsCharacteristic.length===0){
       var indictors=dhsIndicators.indicators.filter(indicator=> indicator.Level1==='Child Health')
@@ -160,7 +154,7 @@ componentWillReceiveProps(nextProps){
       dispatch(actions.indicatorFilter('Child Nutrition',indictors));
     };
 
-
+    
     // //here it doesnt work in componentWillReceiveProps
     // if(dhsCharacteristic.length>1 && dhsDataElements.characteristic.length===0){
     //   var indicators=[];

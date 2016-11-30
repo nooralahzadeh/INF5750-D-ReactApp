@@ -8,8 +8,7 @@ export var CountryForm=React.createClass({
 
 componentWillReceiveProps(nextProps){
 
-  // var{subRegions,dhisOrg}=nextProps;
-  //   this.createCountires(subRegions,dhisOrg);
+  //var{dispatch,availableDataElements,availableDataSets}=nextProps;
 
     },
 

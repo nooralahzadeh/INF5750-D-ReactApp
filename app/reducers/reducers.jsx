@@ -306,16 +306,28 @@ export var orgSelectReducer =  (state=[], action) => {
   }
 };
 
-export var showModalReducer = (state=false, action) => {
+export var showFirstModalReducer = (state=false, action) => {
   switch (action.type) {
-    case 'SHOW_MODAL':
+    case 'SHOW_FIRST_MODAL':
       return true;
-    case 'HIDE_MODAL':
+    case 'HIDE_FIRST_MODAL':
       return false;
     default:
       return state;
   };
 };
+
+export var showSecondModalReducer = (state=false, action) => {
+  switch (action.type) {
+    case 'SHOW_SECOND_MODAL':
+      return true;
+    case 'HIDE_SECOND_MODAL':
+      return false;
+    default:
+      return state;
+  };
+};
+
 
 export var DHISHierarchyReducer = (state = {data:[], levels:[]}, action) => {
   switch (action.type) {
@@ -343,14 +355,21 @@ export var importDHISReducer = (state = {isImporting: false, data:[]}, action) =
   switch (action.type) {
     case 'START_IMPORT_TO_DHIS':
       return {
+        ...state,
         isImporting: true,
-        data:[]
+
       };
     case 'COMPLETE_IMPORT_TO_DHIS':
       return {
         isImporting: false,
         data:action.data
       };
+
+      case 'EMPTY_IMPORTED_DATA':
+          return {
+            isFetching: false,
+            data:undefined
+          } ;
     default:
       return state;
   }

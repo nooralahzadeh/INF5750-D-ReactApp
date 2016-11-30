@@ -10,6 +10,7 @@ import CountryForm from 'CountryForm';
 import YearForm from 'YearForm';
 import VariableForm from 'VariableForm';
 
+
 export var Main= React.createClass({
   getInitialState:function(){
     return {
@@ -69,7 +70,7 @@ export var Main= React.createClass({
 
   stepShouldChange:function() {
     return true;
-    var {years,step,dhisOrg,dispatch} = this.props;
+    var {years,step,dhisOrg,dispatch,availableDataElements,availableDataSets} = this.props;
     if((dhisOrg.level===4) && dhisOrg.res.status===200){
       return true;
       }
@@ -77,6 +78,7 @@ export var Main= React.createClass({
     if (years.years.length>0) {
        return true;
      }
+
    },
 
 

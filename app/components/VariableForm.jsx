@@ -15,7 +15,7 @@ const FOUNDATION_CLASSES = {
   buttonActive: 'btn btn btn-block btn-primary'
 }
 
-const customStyles = {
+const customStyleFirst = {
     content : {
     position                   : 'absolute',
     top                        : '100px',
@@ -32,11 +32,31 @@ const customStyles = {
     }
   };
 
-const dhis='http://localhost:8082/';
+  const customStyleSecond = {
+      content : {
+      position                   : 'absolute',
+      top                        : '200px',
+      left                       : '400px',
+      right                      : '400px',
+      bottom                     : '200px',
+      border                     : '1px solid #ccc',
+      background                 : '#fff',
+      overflow                   : 'auto',
+      WebkitOverflowScrolling    : 'touch',
+      borderRadius               : '4px',
+      outline                    : 'none',
+      padding                    : '20px'
+      }
+    };
+
+const dhis='http://localhost:8082';
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
 const DHIS_GET_LEVEL_URL=`${dhis}/api/filledOrganisationUnitLevels`;
 const DHIS_POST_URL=`${dhis}/api/metadata`;
 const DHIS_POST_DATAVALUES_URL=`${dhis}/api/dataValueSets?orgUnitIdScheme=name`;
+const DHIS_DATASET_API_URL=`${dhis}/api/dataSets?pageSize=1000&fields=shortName,code,id,description&filter=description:eq:dhs`;
+const DHIS_DATAELEMNT_API_URL=`${dhis}/api/dataElements?pageSize=2000&fields=name,shortName,code,id,description&filter=description:eq:dhs`;
+
 export var VariableForm=React.createClass({
 
   getInitialState: function() {
@@ -64,6 +84,7 @@ export var VariableForm=React.createClass({
             indicator=> indicator.Level2===category.id? indicators.push(indicator.IndicatorId):''
           );
         }
+
        if(indicators.length>0){
          var indicatorIds= indicators.map(function(ind){
            return ind;
@@ -98,13 +119,18 @@ handlechange:function(e) {
 
 componentWillReceiveProps(nextProps){
 
-  var{importData,step,orgUnitsLevels,dispatch,dhsCharacteristic,dhsIndicators}=nextProps;
+  var{importData,step,orgUnitsLevels,dispatch,dhsCharacteristic,dhsIndicators,importedData}=nextProps;
   if (importData.data===undefined || !importData.data.Data.length>0){
-        dispatch(actions.hideModal());
+        dispatch(actions.hideFirstModal());
       } else {
-        dispatch(actions.showModal());
+        dispatch(actions.showFirstModal());
       }
 
+     if(!importedData.isImporting && importedData.data.importCount!==undefined){
+         dispatch(actions.showSecondModal());
+       }else {
+          dispatch(actions.hideSecondModal());
+      }
 
 
 
@@ -117,33 +143,50 @@ componentWillReceiveProps(nextProps){
 
   handleImportModal:function(){
       this.queryBuilder();
+      var{dispatch,availableDataElements,availableDataSets}=this.props;
+      if(availableDataElements.dataElements.length===0 && availableDataSets.datasets.length===0){
+        dispatch(actions.fetchDataSets(DHIS_DATASET_API_URL));
+        dispatch(actions.fetchDataElements(DHIS_DATAELEMNT_API_URL));
+      };
       },
 
  importToDHIS:function(){
    var{dispatch,selectedCounrty}=this.props;
    dispatch(actions.importToDHIS(DHIS_POST_DATAVALUES_URL,selectedCounrty));
-   dispatch(actions.hideModal());
+   dispatch(actions.showSecondModal());
    dispatch(actions.emptyImportData());
 
  },
 
-  afterOpenModal: function() {
+  afterOpenFirstModal: function() {
       var {dispatch} = this.props;
       dispatch(actions.onCancelModalSelectedOrg());
       dispatch(actions.onCancelModalorgs());
     },
 
-    closeModal: function() {
+  closeFirstModal: function() {
       var {dispatch} = this.props;
-      dispatch(actions.hideModal());
+      dispatch(actions.hideFirstModal());
       dispatch(actions.emptyImportData());
 
       },
 
+    afterOpenSecondModal: function() {
+          var {dispatch} = this.props;
+          dispatch(actions.onCancelModalSelectedOrg());
+          dispatch(actions.onCancelModalorgs());
+        },
+
+      closeSecondModal: function() {
+          var {dispatch} = this.props;
+          dispatch(actions.hideSecondModal());
+          dispatch(actions.emptyImportedData());
+
+          },
 
 
   render:function(){
-    var {dispatch,showModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData,dhsCharacteristic,step} = this.props;
+    var {dispatch,showFirstModal,showSecondModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData,dhsCharacteristic,step,importedData} = this.props;
 
     var isloading= importData.isFetching ? 'is loading...' : '';
     var isloadingOrg= dhis_orgs.isFetching ? 'is loading....' : '';
@@ -182,6 +225,8 @@ if(step===4 && dhsCharacteristic.length>1){
   </div>
 );
 };
+
+
 
       return(
 
@@ -241,10 +286,10 @@ if(step===4 && dhsCharacteristic.length>1){
 
 
             <Modal
-                  isOpen={showModal}
-                  onAfterOpen={this.afterOpenModal}
-                  onRequestClose={this.closeModal}
-                  style={customStyles}
+                  isOpen={showFirstModal}
+                  onAfterOpen={this.afterOpenFirstModal}
+                  onRequestClose={this.closeFirstModal}
+                  style={customStyleFirst}
                   shouldCloseOnOverlayClick={false}
                   contentLabel="Import"
               >
@@ -303,20 +348,23 @@ if(step===4 && dhsCharacteristic.length>1){
               <div>
                   <div>
                       <a className="success button float-right" href="#" onClick={this.importToDHIS}>Import</a>
-                      <a className="alert button float-left" href="#" onClick={this.closeModal}>Cancel</a>
+                      <a className="alert button float-left" href="#" onClick={this.closeFirstModal}>Cancel</a>
                   </div>
               </div>
               </Modal>
 
               <Modal
-                    isOpen={false}
-                    onAfterOpen={this.afterOpenModal2}
-                    onRequestClose={this.closeModal2}
-                    style={customStyles}
+                    isOpen={showSecondModal}
+                    onAfterOpen={this.afterOpenSecondModa}
+                    onRequestClose={this.closeSecondModal}
+                    style={customStyleSecond}
                     shouldCloseOnOverlayClick={false}
                     contentLabel="Import..."
                 >
-                <p>How many data importedt!</p>
+                <div>
+                  <p>How many data importedt!</p>
+                  <a className="alert button float-left" href="#" onClick={this.closeSecondModal}>OK</a>
+                </div>
               </Modal>
           </div>
     </div>
