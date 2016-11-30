@@ -15,6 +15,7 @@ const config = {
 
 }
 
+
 //setup actions
 
 
@@ -311,7 +312,11 @@ export function fetchCountires (url) {
        var data=res.data.Data;
        dispatch(completeCountiresFetch(data))
   }, function (res) {
-    throw new Error(res.data.message);
+    var data={
+      "status":res.response.status,
+      "statusText":res.response.statusText
+    };
+      dispatch(completeCountiresFetch(data))
   });
   }
 };
@@ -426,10 +431,14 @@ export function dhsQuery (url) {
   return function (dispatch) {
     dispatch(startDHSQuery());
   axios.get(url).then(function (res) {
-       var data=res.data;
+       var data=res.data.Data;
        dispatch(completeDHSQuery(data))
   }, function (res) {
-    console.log(res);
+    var data={
+      "status":res.response.status,
+      "statusText":res.response.statusText
+    };
+      dispatch(completeDHSQuery(data))
   });
   }
 };
@@ -640,7 +649,7 @@ export function importToDHIS (url,data)  {
         var period = String(data.SurveyYearLabel).split("-");
 
         var second=parseInt(period[1], 10);
-        console.log(second);
+
               if (second >12 || second < 1 || isNaN(second)){
               	  period=period[0]+'01'
                 }
@@ -670,7 +679,7 @@ export function importToDHIS (url,data)  {
          };
 
 
-     console.log(JSON.stringify(dataValues));
+    // console.log(JSON.stringify(dataValues));
 
 
       axios.post(url,JSON.stringify(dataValues), config).then(function (res) {
@@ -732,7 +741,11 @@ export function fetchIndicators (url) {
        var data=res.data.Data;
        dispatch(completeIndicatorFetch(data))
   }, function (res) {
-    throw new Error(res.data.message);
+    var data={
+      "status":res.response.status,
+      "statusText":res.response.statusText
+    };
+    dispatch(completeIndicatorFetch(data))
   });
   }
 };
@@ -770,7 +783,11 @@ export function fetchCharacteritics (url) {
        var data=res.data.Data;
        dispatch(completeCharacteriticFetch(data))
   }, function (res) {
-    throw new Error(res.data.message);
+    var data={
+      "status":res.response.status,
+      "statusText":res.response.statusText
+    };
+    dispatch(completeCharacteriticFetch(data))
   });
   }
 };

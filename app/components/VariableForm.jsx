@@ -93,6 +93,8 @@ export var VariableForm=React.createClass({
 
       if(breakdown!==''){
         var breakdown=breakdown;
+      }else{
+        var breakdown="all";
       }
    var requestUrl = `${DHS_DATA_API_URL}?countryIds=${selectedCounrty.shortName}&surveyYear=${surveyYear}&indicatorIds=${indicatorIds}&breakdown=${breakdown}`;
    dispatch(actions.dhsQuery(requestUrl));
@@ -120,14 +122,18 @@ handlechange:function(e) {
 componentWillReceiveProps(nextProps){
 
   var{importData,step,orgUnitsLevels,dispatch,dhsCharacteristic,dhsIndicators,importedData}=nextProps;
-  if (importData.data===undefined || !importData.data.Data.length>0){
+//  console.log(importData.data, !importData.isFetching);
+  if (!importData.isFetching && importData.data===undefined ){
         dispatch(actions.hideFirstModal());
-      } else {
-        dispatch(actions.showFirstModal());
-      }
+      } else if( importData.data.length===0){
+          dispatch(actions.hideFirstModal());
+        } else if(importData.data.status===404 ||importData.data.status===500){
 
+          dispatch(actions.hideFirstModal())
+        } else{
 
-
+          dispatch(actions.showFirstModal());
+        }
 
 
   if (orgUnitsLevels.isFetching){
@@ -185,7 +191,7 @@ componentWillReceiveProps(nextProps){
   render:function(){
     var {dispatch,showFirstModal,showSecondModal,orgUnitsLevels,dhis_orgs,selectedOrgs,importData,dhsCharacteristic,step,importedData} = this.props;
 
-    var isloading= importData.isFetching ? 'is loading...' : '';
+    var isloading= importData.isFetching ? 'is loading...' : (((importData.data  instanceof Object)  && (importData.data.status===404 || importData.data.status===500)) ? <span className="error">{importData.data.statusText}: No response from dhs! Please select proper varibale</span> :'')  ;
     var isloadingOrg= dhis_orgs.isFetching ? 'is loading....' : '';
     //option for organization units
     var defaultOption= <option disabled selected value> -- select an option -- </option>;
@@ -218,7 +224,7 @@ if(step===4 && dhsCharacteristic.length>1){
     child_health_ind[0].indicators.map(charateristic=>level2s.add(charateristic.Level2));
     var child_health_options=[...level2s].map((item,key)=>
     <div>
-        <input id={item} type="checkbox" onChange={this.handlechange}/><label htmlFor={item}>{item}</label>
+        <input id={item} key={key} type="checkbox" onChange={this.handlechange}/><label htmlFor={item}>{item}</label>
     </div>
   );
 
@@ -228,7 +234,7 @@ if(step===4 && dhsCharacteristic.length>1){
   child_nutrition_ind[0].indicators.map(charateristic=>level2s.add(charateristic.Level2));
   var child_nutrition_options=[...level2s].map((item,key)=>
   <div>
-      <input id={item} type="checkbox" onChange={this.handlechange}/><label htmlFor={item}>{item}</label>
+      <input id={item} key={key} type="checkbox" onChange={this.handlechange}/><label htmlFor={item}>{item}</label>
   </div>
 );
 };
@@ -257,7 +263,7 @@ if(step===4 && dhsCharacteristic.length>1){
               <fieldset>
               <span className="form-title">Options</span>
               <div>
-                <input type="radio" name="option" value="national" id="national" required onChange={this.handleOption}/>
+                <input type="radio" name="option" value="national" id="national"  onChange={this.handleOption}/>
                   <label htmlFor="national">Data-National</label>
               </div>
               <div>
@@ -265,7 +271,7 @@ if(step===4 && dhsCharacteristic.length>1){
                 <label htmlFor="subnational">Data-Subnational</label>
               </div>
               <div>
-              <input type="radio" name="option" value="all" id="all" onChange={this.handleOption} />
+              <input type="radio" name="option" value="all" id="all"  checked onChange={this.handleOption} />
                 <label htmlFor="all">Data-All</label>
               </div>
               </fieldset>
@@ -280,9 +286,7 @@ if(step===4 && dhsCharacteristic.length>1){
           <div>
             <p>
             {
-              (importData.isFetching) ?'':
-              ((importData.data!==undefined) ? ( (importData.data.Data.length>0 && !importData.isFetching)?
-                  '' : <span className="error">There is no data to import!</span>) : '')
+              (!importData.isFetching && importData.data===undefined) ? '': ((!importData.isFetching && importData.data.length===0 && step===4)? <span className="error">There is no data to import!</span> :' ')
             }
             </p>
           </div>

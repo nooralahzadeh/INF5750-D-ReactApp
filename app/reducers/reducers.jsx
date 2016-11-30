@@ -154,13 +154,14 @@ export var importDHSReducer = (state = {isFetching: false, data:undefined}, acti
   switch (action.type) {
     case 'START_DHS_QUERY':
       return {
+        data:[],
         isFetching: true,
       };
     case 'COMPLETE_DHS_QUERY':
       return {
         isFetching: false,
         data:action.data
-        }  ;
+          };
     case 'EMPTY_IMPORT_DATA':
         return {
           isFetching: false,
