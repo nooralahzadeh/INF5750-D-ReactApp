@@ -429,7 +429,7 @@ export function dhsQuery (url) {
        var data=res.data;
        dispatch(completeDHSQuery(data))
   }, function (res) {
-    throw new Error(res.data.message);
+    console.log(res);
   });
   }
 };
@@ -637,17 +637,19 @@ export function importToDHIS (url,data)  {
 
       if(dataElelemtExist.length>0 && dataSetId.length>0 && data.Value!==0){
 
-    var period = data.SurveyYearLabel.split("-");
-    var second=parseInt(period[1], 10);
-          if (second >12 || second <1 ){
-          	  period=period[0]+'01'
+        var period = String(data.SurveyYearLabel).split("-");
+
+        var second=parseInt(period[1], 10);
+        console.log(second);
+              if (second >12 || second < 1 || isNaN(second)){
+              	  period=period[0]+'01'
+                }
+             else if(second < 10){
+               period=period[0]+"0"+second
             }
-         else if(second<10){
-           period=period[0]+"0"+second
-        }
-        else {
-          period=period[0]+second
-        }
+            else {
+              period=period[0]+second
+            }
 
       var dataValue=
           {
@@ -669,7 +671,7 @@ export function importToDHIS (url,data)  {
 
 
      console.log(JSON.stringify(dataValues));
-     debugger;
+
 
       axios.post(url,JSON.stringify(dataValues), config).then(function (res) {
            var data=res.data;
@@ -904,7 +906,7 @@ export function createDataElement (url)  {
 
 
           var dataSet={
-              "id":pad(indicator[0].IndicatorId.split("_").join(""),11),
+              "id":pad(String(indicator[0].IndicatorId).split("_").join(""),11),
               "name":indicator[0].Label,
               "shortName":indicator[0].IndicatorId,
               "code":indicator[0].IndicatorId,

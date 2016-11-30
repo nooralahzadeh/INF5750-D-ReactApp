@@ -126,11 +126,7 @@ componentWillReceiveProps(nextProps){
         dispatch(actions.showFirstModal());
       }
 
-     if(!importedData.isImporting && importedData.data.importCount!==undefined){
-         dispatch(actions.showSecondModal());
-       }else {
-          dispatch(actions.hideSecondModal());
-      }
+
 
 
 
@@ -154,6 +150,7 @@ componentWillReceiveProps(nextProps){
    var{dispatch,selectedCounrty}=this.props;
    dispatch(actions.importToDHIS(DHIS_POST_DATAVALUES_URL,selectedCounrty));
    dispatch(actions.showSecondModal());
+   dispatch(actions.hideFirstModal());
    dispatch(actions.emptyImportData());
 
  },
@@ -173,8 +170,8 @@ componentWillReceiveProps(nextProps){
 
     afterOpenSecondModal: function() {
           var {dispatch} = this.props;
-          dispatch(actions.onCancelModalSelectedOrg());
-          dispatch(actions.onCancelModalorgs());
+          //dispatch(actions.onCancelModalSelectedOrg());
+          //dispatch(actions.onCancelModalorgs());
         },
 
       closeSecondModal: function() {
@@ -204,6 +201,16 @@ componentWillReceiveProps(nextProps){
          </option>
       );
 
+      if(importedData.isImporting && importedData.data.length===0){
+          var info = <p> is importing .....</p>
+        } else if(!importedData.isImporting && importedData.data instanceof Object) {
+          var info= <ul>
+                          <li>Successfully Imported dataVaules: {importedData.data.importCount.imported}</li>
+                          <li>Successfully Updated dataVaules: {importedData.data.importCount.updated}</li>
+                          <li>Ignored dataVaules: {importedData.data.importCount.ignored}</li>
+                      </ul>
+       }
+
 //since we create 2 set 'Child Health' and 'Child Nutrition'
 if(step===4 && dhsCharacteristic.length>1){
     var child_health_ind=dhsCharacteristic.filter(indicator=> indicator.level==='Child Health');
@@ -225,7 +232,6 @@ if(step===4 && dhsCharacteristic.length>1){
   </div>
 );
 };
-
 
 
       return(
@@ -362,8 +368,11 @@ if(step===4 && dhsCharacteristic.length>1){
                     contentLabel="Import..."
                 >
                 <div>
-                  <p>How many data importedt!</p>
-                  <a className="alert button float-left" href="#" onClick={this.closeSecondModal}>OK</a>
+                  <p>Import result</p>
+                  <div className="callout success">
+                    <div>{info}</div>
+                  </div>
+                  <a className="success hollow button float-center" href="#" onClick={this.closeSecondModal}>OK</a>
                 </div>
               </Modal>
           </div>

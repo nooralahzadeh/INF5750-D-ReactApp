@@ -351,25 +351,25 @@ export var DHISHierarchyReducer = (state = {data:[], levels:[]}, action) => {
 };
 
 
-export var importDHISReducer = (state = {isImporting: false, data:[]}, action) => {
+export var importDHISReducer = (state = {isImporting: false, data:undefined}, action) => {
   switch (action.type) {
     case 'START_IMPORT_TO_DHIS':
       return {
-        ...state,
+        data:[],
         isImporting: true,
 
       };
     case 'COMPLETE_IMPORT_TO_DHIS':
       return {
         isImporting: false,
-        data:action.data
+        data:{...action.data}
       };
 
       case 'EMPTY_IMPORTED_DATA':
-          return {
-            isFetching: false,
-            data:undefined
-          } ;
+        return {
+        isImporting: false,
+        data:undefined
+      };
     default:
       return state;
   }
