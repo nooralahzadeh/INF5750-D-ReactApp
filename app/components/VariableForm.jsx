@@ -278,7 +278,7 @@ if(step===4 && dhsCharacteristic.length>1){
                 <label htmlFor="subnational">Data-Subnational</label>
               </div>
               <div>
-              <input type="radio" name="option" value="all" id="all"  checked onChange={this.handleOption} />
+              <input type="radio" name="option" value="all" id="all"  onChange={this.handleOption} />
                 <label htmlFor="all">Data-All</label>
               </div>
               </fieldset>
