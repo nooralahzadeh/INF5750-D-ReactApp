@@ -10,6 +10,7 @@ export var setUpReducer = (state = {inProgress: false, res:[],data:[], level:und
         inProgress: true,
       };
     case 'COMPLETE_ORG_CREATION':
+      
       return {
         inProgress: false,
         res:action.res,
@@ -39,7 +40,7 @@ export var idDHIDReducer = (state = {isFetching: false, uid:''}, action) => {
   }
 };
 
-export var countryReducer = (state = {isFetching: false, countires: []}, action) => {
+export var countryReducer = (state = {isFetching: false, countires: undefined}, action) => {
   switch (action.type) {
     case 'START_COUNTRY_FETCH':
       return {
@@ -397,21 +398,19 @@ export var levelReducer = (state = {isFetching: false, orgs: []}, action) => {
 
 
 
-export var indicatorReducer = (state = {isFetching: false, indicators: []}, action) => {
+export var indicatorReducer = (state = {isFetching: false, indicators: undefined}, action) => {
   switch (action.type) {
 
     case 'START_INDICATOR_FETCH':
-
       return {
         ...state,
         isFetching: true
       };
     case 'COMPLETE_INDICATOR_FETCH':
-
       return {
         isFetching: false,
         indicators: action.data
-      }  ;
+      } ;
     default:
       return state;
   }
@@ -435,7 +434,7 @@ export var dhsIndicatorFilterReducer = (state = [], action) => {
 };
 
 
-export var characteristicReducer = (state = {isFetching: false, characteristic: []}, action) => {
+export var characteristicReducer = (state = {isFetching: false, characteristic: [],pages:'',retrievedPages:undefined}, action) => {
   switch (action.type) {
     case 'START_CHARACTERISTIC_FETCH':
       return {
@@ -443,10 +442,16 @@ export var characteristicReducer = (state = {isFetching: false, characteristic: 
         isFetching: true
       };
     case 'COMPLETE_CHARACTERISTIC_FETCH':
-      return {
-        isFetching: false,
-        characteristic: action.data
-      };
+      return {...state,
+      characteristic:
+      [...state.characteristic,
+        ...action.data
+      ],
+      isFetching: false,
+      pages:action.pages,
+      retrievedPages:action.retrievedPages
+    };
+
     default:
       return state;
   }

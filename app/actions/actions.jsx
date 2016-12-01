@@ -2,6 +2,7 @@ var axios = require('axios');
 var moment=require('moment');
 var uid = require('uid');
 var actions = require('actions');
+const dhis='http://localhost:8082';
 
 var store = require('configureStore').configure();
 const config = {
@@ -59,13 +60,15 @@ export function createFirstLevel (url,data,level)  {
         };
 
 
-        axios.post(url,JSON.stringify(obj), config).then(function (res) {
+      axios.post(url,JSON.stringify(obj), config).then(function (res) {
                var res=res.data;
+
                dispatch(completeOrganizationCreation(res,data,level));
                dispatch(setDHISHierarchy(data,level))
           }, function (res) {
             throw new Error(res.data.message);
           });
+
       }
   };
 
@@ -502,8 +505,10 @@ export function fetchOrgs (url,level)  {
     dispatch(startOrgFetch());
   var requestUrl = `${url}?level=${level}&paging=false`;
   axios.get(requestUrl,config).then(function (res) {
+
        var data=res.data.organisationUnits;
        dispatch(completeOrgFetch(data))
+
   }, function (res) {
     throw new Error(res.data.message);
   });
@@ -768,27 +773,34 @@ export var startCharacteriticFetch = () => {
   };
 };
 
-export var completeCharacteriticFetch = (data) => {
+export var completeCharacteriticFetch = (data,pages,retrievedPages) => {
   return {
     type: 'COMPLETE_CHARACTERISTIC_FETCH',
-    data
+    data,
+    pages,
+    retrievedPages
   };
 };
 
-export function fetchCharacteritics (url) {
+export function fetchCharacteritics (url,retrievedPages) {
   return function (dispatch) {
     dispatch(startCharacteriticFetch());
+     //first lets see how many page there are
 
   axios.get(url).then(function (res) {
+       var pages=res.data.TotalPages;
        var data=res.data.Data;
-       dispatch(completeCharacteriticFetch(data))
-  }, function (res) {
-    var data={
+
+       dispatch(completeCharacteriticFetch(data,pages,retrievedPages))
+     }, function (res) {
+       var data={
       "status":res.response.status,
       "statusText":res.response.statusText
-    };
-    dispatch(completeCharacteriticFetch(data))
-  });
+      };
+    dispatch(completeCharacteriticFetch(data,'0','0'))
+    });
+
+  //
   }
 };
 
@@ -855,7 +867,6 @@ export function createDataElement (url)  {
 
       for(let element of characteristicsSet){
 
-
         var dataElement={
             "id":pad(element.CharacteristicId,11),
             "name":element.CharacteristicLabel,
@@ -879,6 +890,9 @@ export function createDataElement (url)  {
         {
       "dataElements": dataElements
         };
+
+
+
 
         axios.post(url,JSON.stringify(data_elements), config).then(function (res) {
                var res=res.data;
@@ -911,17 +925,19 @@ export function createDataElement (url)  {
     return function (dispatch,getState) {
         dispatch(startDataSetCreation());
         var  state = getState();
-        var dataSets=[]
+        var dataSets=[];
+
+        var organisationUnits=[];
+          for(let org of state.dhis_orgs.orgs){
+              var org={"id": org.id}
+                organisationUnits.push(org);
+              };
+
 
 
         for(let element of state.dhsDataElementsToDHIS){
           var indicator=state.dhsIndicators.indicators.filter(ind=>ind.IndicatorId===element.indicator);
-        //  var dataSetElements=[];
 
-        //  for (let characteristic of element.Characteristics){
-        //        var id=state.dhisDataElements.data.filter(element=>characteristic.CharacteristicId===element.shortName)[0].id;
-        //        dataSetElements.push({"id": id});
-        //     };
 
 
           var dataSet={
@@ -931,7 +947,8 @@ export function createDataElement (url)  {
               "code":indicator[0].IndicatorId,
               "description":'dhs',
               "periodType": "Monthly",
-              "categoryCombo": {"id": "p0KPaWEg3cf"}
+              "categoryCombo": {"id": "p0KPaWEg3cf"},
+              "organisationUnits":organisationUnits
               }
 
           dataSets.push(dataSet)
@@ -942,12 +959,14 @@ export function createDataElement (url)  {
         "dataSets": dataSets
           };
 
+          //console.log(JSON.stringify(datasets));
         axios.post(url,JSON.stringify(datasets), config).then(function (res) {
                  var res=res.data;
                  dispatch(completeDataSetCreation(res,dataSets));
             }, function (res) {
               throw new Error(res.data.message);
             });
+
         }
     };
 
@@ -997,7 +1016,7 @@ export function createDataElement (url)  {
                 }
 
               axios.post(url,JSON.stringify(dataSetElements), config).then(function (res) {
-                        dispatch(completeDataSetElemntCreation(dataSetElements));
+                        dispatch(completeDataSetElemntCreation(data));
                     }, function (res) {
                       console.log(res)
                     });

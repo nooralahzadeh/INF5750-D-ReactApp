@@ -7,11 +7,12 @@ const dhis='http://localhost:8082';
 const DHIS_POST_URL=`${dhis}/api/metadata`;
 const DHIS_ID_API_URL=`${dhis}/api/system/id`;
 const DHS_COUNTRY_API_URL='http://api.dhsprogram.com/rest/dhs/countries';
-const DHIS_API_URL=`${dhis}/api/organisationUnits.json`;
+const DHIS_API_URL_ORG=`${dhis}/api/organisationUnits.json`;
 const DHS_INDICATOR_API_URL='http://api.dhsprogram.com/rest/dhs/indicators';
 const DHS_DATA_API_URL='http://api.dhsprogram.com/rest/dhs/data';
 const DHIS_POST_DATASETELEMENT_URL=`${dhis}/api/dataSetElements`;
-
+const PAGES_FORM_DHS=2;
+var axios = require('axios');
 export var Setup=React.createClass({
 
 
@@ -55,14 +56,7 @@ orgRegionHandler:function(btn){
         dispatch(actions.createThirdLevel(DHIS_POST_URL,3));
         document.getElementById("btn_country").className="secondary hollow button";
           }
-    // if(dhisOrg.level===2 && dhisOrg.data.status==='OK' && regions.data===undefined){
-    //   var parentId=uid.uid.codes[0];
-    //   var url=`${DHIS_API_URL}?filter=parent.id:eq:${parentId}`;
-    //
-    //   //var url=`${DHIS_API_URL}?paging=false&level=2`;
-    //   //means that we already created the region level so we can fetch their uid s
-    //   dispatch(actions.fetchRegions(url));
-    // }
+
     },
 
   orgCountryHandler:function(btn){
@@ -72,7 +66,7 @@ orgRegionHandler:function(btn){
       if(JSON.stringify([...set].sort())===JSON.stringify([1,2,3].sort())){
         btn.target.className='success button';
         dispatch(actions.createFourthLevel(DHIS_POST_URL,4));
-        document.getElementById("btn_DataElements").className="secondary hollow button";
+
       }
     },
 
@@ -82,40 +76,44 @@ orgRegionHandler:function(btn){
 
       if(dhsCharacteristic.length>1 && dhsDataElements.characteristic.length===0){
         var indicators=[];
+
         //lets get just first set regarding to child health since there are lots of data
         //for(let element of dhsCharacteristic ){
 
         var element=dhsCharacteristic[0];
-          for(let indicator of element.indicators){
-            indicators.push(indicator.IndicatorId);
+           for(let indicator of element.indicators){
+             indicators.push(indicator.IndicatorId);
           }
         //}
 
-        if(indicators.length>0){
+       if(indicators.length>0){
           var indicatorIds= indicators.map(function(ind){
             return ind;
             }).join(",");
           }
 
+
           //lets get some of them 1000
-         var requestUrl = `${DHS_DATA_API_URL}?indicatorIds=${indicatorIds}&breakdown=all&perpage=1000`;
-
-         dispatch(actions.fetchCharacteritics(requestUrl));
+         var url = `${DHS_DATA_API_URL}?indicatorIds=${indicatorIds}&breakdown=all&perpage=1000`;
+         dispatch(actions.fetchCharacteritics(url,'1'));
       }
-
+        dispatch(actions.fetchOrgs(DHIS_API_URL_ORG,4));
       },
 
-      dhisDataElement_DataSetCreater:function(btn){
-        var{dispatch,dhsDataElementsToDHIS} =this.props;
+
+
+    dhisDataElement_DataSetCreater:function(btn){
+        var{dispatch,dhsDataElementsToDHIS,dhsDataElements} =this.props;
+
         if(dhsDataElementsToDHIS.length>0){
         dispatch(actions.createDataElement(DHIS_POST_URL));
         dispatch(actions.createDataSet(DHIS_POST_URL));
-        }
+      }
+
 
       },
 
-
-      dhisDataSetToDataElement:function(btn){
+    dhisDataSetToDataElement:function(btn){
         var{dispatch,dhisDataSets} =this.props;
         if(dhisDataSets.data.length>0){
         dispatch(actions.createDataSetElements(DHIS_POST_URL));
@@ -145,49 +143,55 @@ componentWillMount(){
    },
 
 componentWillReceiveProps(nextProps){
-    var{dispatch,dhsCharacteristic,dhsIndicators,dhsDataElements,dhsDataElementsToDHIS,availableDataElements,availableDataSets}=nextProps;
+    var{dispatch,dhsCharacteristic,dhsIndicators,dhisDataSets,dhisDataSetsElements,dhsDataElements,dhsDataElementsToDHIS,availableDataElements,availableDataSets}=nextProps;
   //Here we just keep 2 level indicators
-  if(dhsIndicators.indicators.length>0 && dhsCharacteristic.length===0){
+  if(dhsIndicators.indicators!==undefined && dhsCharacteristic.length===0){
       var indictors=dhsIndicators.indicators.filter(indicator=> indicator.Level1==='Child Health')
       dispatch(actions.indicatorFilter('Child Health',indictors));
       var indictors=dhsIndicators.indicators.filter(indicator=> indicator.Level1==='Child Nutrition')
       dispatch(actions.indicatorFilter('Child Nutrition',indictors));
     };
 
+//get 10 pages of data results of dhs
+  if(PAGES_FORM_DHS!==dhsDataElements.retrievedPages && dhsDataElements.characteristic.length>0 ){
+    document.getElementById("btn_DataElements").className="warning button";
+      var indicators=[];
 
-    // //here it doesnt work in componentWillReceiveProps
-    // if(dhsCharacteristic.length>1 && dhsDataElements.characteristic.length===0){
-    //   var indicators=[];
-    //   //lets get just first set regarding to child health since there are lots of data
-    //   //for(let element of dhsCharacteristic ){
-    //
-    //   var element=dhsCharacteristic[0];
-    //     for(let indicator of element.indicators){
-    //       indicators.push(indicator.IndicatorId);
-    //     }
-    //   //}
-    //
-    //   if(indicators.length>0){
-    //     var indicatorIds= indicators.map(function(ind){
-    //       return ind;
-    //       }).join(",");
-    //     }
-    //     var testind=indicators[0];
-    //     //lets get some of them 1000
-    //    var requestUrl = `${DHS_DATA_API_URL}?indicatorIds=${testind}&breakdown=all&perpage=1000`;
-    //
-    //    dispatch(actions.fetchCharacteritics(requestUrl));
-    // };
+      var element=dhsCharacteristic[0];
+         for(let indicator of element.indicators){
+           indicators.push(indicator.IndicatorId);
+        }
 
+     if(indicators.length>0){
+        var indicatorIds= indicators.map(function(ind){
+          return ind;
+          }).join(",");
+        }
+    var url = `${DHS_DATA_API_URL}?indicatorIds=${indicatorIds}&breakdown=all&perpage=1000`;
+    var promises=[];
+    var data=[];
+    var retrievedPages='';
+    //var nPages=dhsDataElements.pages;
+    for (var i = 2; i <= PAGES_FORM_DHS; i++) {
+    var pUrl=`${url}&page=${i}`;
+      promises.push(axios.get(pUrl))
+        };
+    axios.all(promises).then(function(results) {
+        results.forEach(function(res) {
+          data.push(...res.data.Data);
+          retrievedPages=res.data.Page;
+        })
+        dispatch(actions.completeCharacteriticFetch(data,dhsDataElements.pages,retrievedPages));
+    });
 
+  }
 
-  if(dhsDataElements.characteristic.length>1 && dhsDataElementsToDHIS.length===0){
-     document.getElementById("btn_DataElements").className="sucess button";
-
+    //we get 10 pages of results from dhs
+  if(dhsDataElements.retrievedPages===PAGES_FORM_DHS && dhsDataElementsToDHIS.length===0){
+     document.getElementById("btn_DataElements").className="success button";
      var indicatorIds=new Set();
      dhsDataElements.characteristic.map(element=>indicatorIds.add(element.IndicatorId));
      var dhisIndicatorsWithCharactersitcs=[];
-
      for (let id of indicatorIds) {
        var Characteristic=[];
        dhsDataElements.characteristic.map(
@@ -209,6 +213,18 @@ componentWillReceiveProps(nextProps){
      dispatch(actions.characteristicFilter(characteristics));
 
   }
+  if(dhsDataElementsToDHIS.length>0){
+     document.getElementById("btn_dhisDataElements").className=" secondary hollow button";
+   }
+
+   if(dhisDataSets.data.length>0){
+     document.getElementById("btn_dhisDataElements").className=" success  button";
+      document.getElementById("btn_dhisDataSetsToDataElement").className="secondary hollow  button";
+    }
+
+    if(dhisDataSetsElements.data.length>0){
+       document.getElementById("btn_dhisDataSetsToDataElement").className="success button";
+     }
 
   },
 
@@ -218,12 +234,17 @@ componentWillReceiveProps(nextProps){
   render:function(){
 
     //come from redux state
-    var{dhisHierarchy} =this.props;
+    var{dhisHierarchy,dhsIndicators,data,dhsDataElements} =this.props;
+
+    var dhsFetchingMessage= dhsIndicators.isFetching ? <div className="loader"></div>  : (((dhsIndicators.data  instanceof Object)  && (dhsIndicators.data.status===404 || importData.data.status===500)) ? <span className="error">{dhsIndicators.data.statusText}: No response from dhs!</span> :'')  ;
+    var dhsDataElementsMessage=dhsDataElements.isFetching ? <div className="loader"></div> :(((dhsDataElements.data  instanceof Object)  && (dhsDataElements.data.status===404 || dhsDataElements.data.status===500)) ? <span className="error">{dhsDataElements.data.statusText}: No response from dhs!</span> :'')  ;
+    var dhsDataAllElementsMessage=(PAGES_FORM_DHS!==dhsDataElements.retrievedPages && dhsDataElements.characteristic.length>0) ? <div className="loader"></div> :''  ;
+
     var levels=new Set(dhisHierarchy.levels);
-    var message_level_1=(JSON.stringify([...levels].sort())===JSON.stringify([1].sort())) ? 'Firs level is created ' : ' ';
-    var message_level_2=(JSON.stringify([...levels].sort())===JSON.stringify([1,2].sort()) ) ? 'Region level is created ' : '';
-    var message_level_3=(JSON.stringify([...levels].sort())===JSON.stringify([1,2,3].sort()) )? 'Sub-region level is created ' : '';
-    var message_level_4=(JSON.stringify([...levels].sort())===JSON.stringify([1,2,3,4].sort()))? 'Country level is created ' : '';
+    var message_level_1=(JSON.stringify([...levels].sort())===JSON.stringify([1].sort())) ? <span className="error"> First level is created </span> : ' ';
+    var message_level_2=(JSON.stringify([...levels].sort())===JSON.stringify([1,2].sort()) ) ? <span className="error"> Region level is created </span> : '';
+    var message_level_3=(JSON.stringify([...levels].sort())===JSON.stringify([1,2,3].sort()) )? <span className="error"> Sub-region level is created </span> : '';
+    var message_level_4=(JSON.stringify([...levels].sort())===JSON.stringify([1,2,3,4].sort()))? <span className="error"> Country level is created </span> : '';
 
       return(
 
@@ -235,15 +256,22 @@ componentWillReceiveProps(nextProps){
           <a className="disabled hollow button" href="#" onClick={this.orgRegionHandler} id="btn_region">Regions</a>
           <a className="disabled hollow button" href="#" onClick={this.orgSubRegionHandler} id="btn_sub_region">SubRegions</a>
           <a className="disabled hollow button" href="#" onClick={this.orgCountryHandler} id="btn_country">Countries</a>
-          <a className="secondary hollow button" href="#" onClick={this.dhisDataelementHandler} id="btn_DataElements">DataElements</a>
-          <a className="secondary hollow button" href="#" onClick={this.dhisDataElement_DataSetCreater} id="btn_dhisDataElements">DataSets</a>
-          <a className="secondary hollow button" href="#" onClick={this.dhisDataSetToDataElement} id="btn_dhisDataSetsToDataElement">CreateDataSetElements</a>
-
          </div>
+
+         <div className="button-group">
+           <a className="secondary hollow button" href="#" onClick={this.dhisDataelementHandler} id="btn_DataElements">DataElements</a>
+           <a className="disabled hollow button" href="#" onClick={this.dhisDataElement_DataSetCreater} id="btn_dhisDataElements">DataSets</a>
+           <a className="disabled hollow button" href="#" onClick={this.dhisDataSetToDataElement} id="btn_dhisDataSetsToDataElement">CreateDataSetElements</a>
+        </div>
+        <div>
           <div>{message_level_1}</div>
-         <div>{message_level_2}</div>
-         <div>{message_level_3}</div>
-         <div>{message_level_4}</div>
+          <div>{message_level_2}</div>
+          <div>{message_level_3}</div>
+          <div>{message_level_4}</div>
+          <div>{dhsFetchingMessage}</div>
+          <div>{dhsDataElementsMessage}</div>
+          <div>{dhsDataAllElementsMessage}</div>
+        </div>
         </div>
         );
         }
